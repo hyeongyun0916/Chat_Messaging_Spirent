@@ -1,0 +1,15 @@
+스프링스터디 1일차
+내용: 스프링에서 Hello World 띄우기
+문제: localhost:8080은 접근이 되나, localhost:8080/ex00에서 404가 뜸.
+시도1. Pivotal tc server가 아닌 tomcat으로 시도 => 실패 Server Tomcat v9.0 Server at localhost failed to start.
+시도2. <Context docBase="ex01" path="/ex01" reloadable="true" source="org.eclipse.jst.jee.server:ex01"/></Host> (server.xml) 에서 path를 / 로 바꾸어줌 => 실패
+시도3. /Users/hyeongyunmun/.m2/repository 의 내용들을 delete해주어 해결
+느낀점. 스프링을 처음해보는데, 8시간만에 해결을 보아 감격스러웠다.
+
+Spring Study Day 1
+Content: Launching Hello World in Spring
+Problem: localhost:8080 could accessed, but localhost:8080/ex00 was 404
+Try1. Trying Tomcat instead of Pivotal tc server => Fail. (Server Tomcat v9.0 Server at localhost failed to start)
+Try2. Replace path with ‘/’ in the server.xml (Context docBase="ex01" path="/ex01" reloadable="true" source="org.eclipse.jst.jee.server:ex01"/></Host>) => Fail.
+Try3. delete the contents of ‘/Users/hyeongyunmun/.m2/repository’ => Success
+Opinion: This is the first time I've been to Spring, and I was excited to see the solution in 8 hours.
