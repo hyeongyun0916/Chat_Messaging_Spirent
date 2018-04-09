@@ -1,0 +1,30 @@
+스프링스터디 2일차
+내용: echo WebSocket
+
+문제1: 책에서 나온 예제를 그대로 작성했는데, 기존에 나오던 localhost:8080/chat 까지 404가 뜸.
+시도1. servlet-context.xml 한군데에 작성해보기도 하고 ws-config.xml으로 나누어 작성해보기도 함. => 실패
+시도2. /Users/hyeongyunmun/.m2/repository 의 내용들을 delete해주어 해결
+
+문제2: ws://localhost:8080/chat/echo에서 500이 뜸.
+org.springframework.web.socket.server.HandshakeFailureException: Uncaught failure for request http://localhost:8080/Chat/echo; nested exception is java.lang.NoSuchMethodError: org.springframework.web.util.WebUtils.isValidOrigin(Lorg/springframework/http/HttpRequest;Ljava/util/Collection;)Z
+시도1. isValidOrigin의 문제인가 하여 websocket:handlers태그에 allowed-origins="*"을 추가함 => 실패
+시도2. java와 모듈들의 version을 맞춤 => 성공
+
+문제3: allowed-origins="*"을 지우니 Error during WebSocket handshake: Unexpected response code: 403 발생
+시도1. allowed-origins="*"를 복원.
+
+
+
+Spring Study Day 2
+Content: echo WebSocket
+
+Problem1: I wrote the example from the book, but the 404 was up to localhost:8080/chat, which worked well.
+Try1. I tried the code in servlet_context.xml but failed, so I divided it to ws-config.xml, but it also failed.
+Try2. Delete the contents of ‘/Users/hyeongyunmun/.m2/repository’ => Success
+
+Problem2: 500 at ws://localhost:8080/chat/echo
+(org.springframework.web.socket.server.HandshakeFailureException: Uncaught failure for request http://localhost:8080/Chat/echo; nested exception is java.lang.NoSuchMethodError: org.springframework.web.util.WebUtils.isValidOrigin(Lorg/springframework/http/HttpRequest;Ljava/util/Collection;)Z) Try1. Adding allowed-origins="*" to the websocket:handlers tag, thinking it is a problem with isValidOrigin. => Fail
+Try2. Match Java and Modules version
+
+Problem3: Error during WebSocket handshake: Unexpected response code: 403 caused by erase allowed-origins="*"
+Try1. Restore allowed-origins="*"
