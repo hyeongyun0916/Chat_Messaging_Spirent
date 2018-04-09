@@ -10,7 +10,7 @@
 		http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket.xsd">
 
 	<websocket:handlers allowed-origins="*">
-		<websocket:mapping handler="WebSocketHandler" path="/echo" />
+		<websocket:mapping handler="WebSocketHandler" path="/chat" />
 	</websocket:handlers>
 	
 	<beans:bean id="WebSocketHandler" class="com.hg.chat.WebsocketHandler" />
