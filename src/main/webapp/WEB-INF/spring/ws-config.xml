@@ -8,7 +8,8 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket.xsd">
-
+	
+	<context:annotation-config />
 	<websocket:handlers allowed-origins="*">
 		<websocket:mapping handler="WebSocketHandler" path="/chat" />
 	</websocket:handlers>

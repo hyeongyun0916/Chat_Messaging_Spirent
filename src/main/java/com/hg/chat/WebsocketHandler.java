@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -12,7 +13,10 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 public class WebsocketHandler extends TextWebSocketHandler {
 
 	private Map<String, WebSocketSession> users = new ConcurrentHashMap<>();
-
+	
+//	@Autowired
+//	private app_infoRepository reposirtory;
+	
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 		log(session.getId() + "연결 됨");
@@ -28,6 +32,8 @@ public class WebsocketHandler extends TextWebSocketHandler {
 	@Override
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 		log(session.getId() + "로부터 메시지 수신: " + message.getPayload());
+//		final app_info info = new app_info(5, message.getPayload());
+//		reposirtory.save(info);
 		for (WebSocketSession s : users.values()) {
 			s.sendMessage(message);
 			log(s.getId() + "에 메시지 발송: " + message.getPayload());
