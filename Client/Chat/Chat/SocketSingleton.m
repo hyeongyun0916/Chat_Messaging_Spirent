@@ -1,86 +1,62 @@
 //
-//  ViewController.m
+//  SocketSingleton.m
 //  Chat
 //
-//  Created by 현균 문 on 2018. 4. 18..
+//  Created by 현균 문 on 2018. 4. 20..
 //  Copyright © 2018년 현균 문. All rights reserved.
 //
 
+#import "SocketSingleton.h"
 
-@import CocoaAsyncSocket;
-
-#import "ViewController.h"
-#import "GCDAsyncSocket.h"
-
-@interface ViewController () <GCDAsyncSocketDelegate, UITableViewDelegate, UITableViewDataSource> {
+@implementation SocketSingleton {
     GCDAsyncSocket *clientSocket;
     NSString *host;
     uint16_t portNumber;
-    __weak IBOutlet UILabel *stateLabel;
-    __weak IBOutlet UITextField *msgTF;
-    NSMutableArray* chatArr;
-    __weak IBOutlet UITableView *chatTable;
 }
 
-@end
-
-@implementation ViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-    
-    chatArr = [NSMutableArray new];
-    [chatTable setRowHeight:UITableViewAutomaticDimension];
-    [chatTable setEstimatedRowHeight:40.f];
++ (instancetype)getInstance {
+    static SocketSingleton *_instance = nil;
+    static dispatch_once_t oncePredicate;
+    dispatch_once(&oncePredicate, ^{
+        _instance = [[SocketSingleton alloc] init];
+    });
+    return _instance;
 }
 
-- (IBAction)connectToServer:(id)sender {
+-(id)init {
+    if (self = [super init]) {
+        // do init here
+        [self initSocketSingleton];
+    }
+    return self;
+}
+
+- (void)initSocketSingleton {
     clientSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
-    host = @"172.30.1.37";
-    portNumber = 1111;
+    host = @"172.30.1.35";
+    portNumber = 1112;
     
     NSError *error = nil;
     if (![clientSocket connectToHost:host onPort:portNumber error:&error])
         DLog(@"Client failed connecting to up server socket on port %d %@", portNumber, error);
 }
 
-- (IBAction)sendMessage:(id)sender {
-    NSDictionary *dic = @{@"cmd":@"msg", @"content":[NSString stringWithFormat:@"%@\n", msgTF.text]};
+- (void)sendCmd:(NSString *)cmd Str:(NSString *)str {
+    NSDictionary *dic = @{@"cmd":cmd, @"content":[NSString stringWithFormat:@"%@\n", str]};
     NSData* kData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
     NSString* kJsonStr = [[NSString alloc] initWithData:kData encoding:NSUTF8StringEncoding];
     NSData *requestData = [kJsonStr dataUsingEncoding:NSUTF8StringEncoding];
     [clientSocket writeData:requestData withTimeout:-1 tag:0];
     [clientSocket readDataToData:GCDAsyncSocket.LFData withTimeout:-1 tag:0];
-}
 
-- (IBAction)disConnectToServer:(id)sender {
-    clientSocket = nil;
-}
-
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-#pragma mark TableDelegate
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return chatArr.count;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"ChatCell"];
-    [(UILabel*)[cell viewWithTag:2] setText:chatArr[indexPath.row]];
-    return cell;
 }
 
 #pragma SocketDelegate
 
-- (dispatch_queue_t)newSocketQueueForConnectionFromAddress:(NSData *)address onSocket:(GCDAsyncSocket *)sock {
-    return dispatch_get_main_queue();
-}
+//- (dispatch_queue_t)newSocketQueueForConnectionFromAddress:(NSData *)address onSocket:(GCDAsyncSocket *)sock {
+//    DLog(@"");
+//    return dispatch_get_main_queue();
+//}
 
 - (void)socket:(GCDAsyncSocket *)sock didAcceptNewSocket:(GCDAsyncSocket *)newSocket {
     DLog(@"");
@@ -88,7 +64,8 @@
 
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port {
     DLog(@"");
-    [stateLabel setText:@"isConnected? YES"];
+//    [_delegate didConnected];
+//    [stateLabel setText:@"isConnected? YES"];
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didConnectToUrl:(NSURL *)url {
@@ -98,8 +75,9 @@
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag {
     NSString* str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     DLog(@"%@", str);
-    [chatArr addObject:str];
-    [chatTable reloadData];
+    [_delegate didReadString:str];
+//    [chatArr addObject:str];
+//    [chatTable reloadData];
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didReadPartialDataOfLength:(NSUInteger)partialLength tag:(long)tag {
@@ -127,8 +105,8 @@
 }
 
 - (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err {
-    DLog(@"");
-    [stateLabel setText:@"isConnected? NO"];
+    DLog(@"%@", err);
+//    [stateLabel setText:@"isConnected? NO"];
 }
 
 - (void)socketDidSecure:(GCDAsyncSocket *)sock {
@@ -138,9 +116,5 @@
 - (void)socket:(GCDAsyncSocket *)sock didReceiveTrust:(SecTrustRef)trust completionHandler:(void (^)(BOOL))completionHandler {
     DLog(@"");
 }
-
-
-#pragma mark UITableDelegate
-
 
 @end

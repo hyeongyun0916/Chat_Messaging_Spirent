@@ -19,15 +19,22 @@
 
 #include "json/json.h"
 
+#include "include/mysql_connection.h"
+#include "include/mysql_error.h"
+#include "include/mysql_driver.h"
+#include "include/cppconn/resultset.h"
+#include "include/cppconn/statement.h"
+
+
 using namespace std;
 using namespace Json;
+using namespace sql;
 
 #define BUFSIZE 1024
 
 void* clnt_connection(void * arg);
-void send_message(char* message, int len);
+void send_message(string str);
 void error_handling(char const* message);
-
 
 int clnt_number=0;
 int clnt_socks[10];
@@ -38,6 +45,16 @@ pthread_mutex_t mutx;
 int main(int argc, const char * argv[]) {
     // insert code here...
 
+    
+    Driver *driver;
+    Connection *con;
+    Statement *stmt;
+    ResultSet *res;
+    
+    driver = get_driver_instance();
+    con = driver->connect("tcp://localhost:3306", "root", "root");
+    con->setSchema("Test");
+    
     int serv_sock;
     int clnt_sock;
     struct sockaddr_in serv_addr;
@@ -78,6 +95,9 @@ int main(int argc, const char * argv[]) {
         cout << 8 << endl;
         printf(" IP : %s \n", inet_ntoa(clnt_addr.sin_addr));
         cout << 9 << endl;
+        int result;
+        pthread_join(thread, (void **)&result);
+        cout << "result: " << result << endl;
     }
     cout << 10 << endl;
     return 0;
@@ -100,21 +120,21 @@ void *clnt_connection(void *arg) {
              cmd type
              signin
              singup
-             state
-             
+             signout
+             status
              msg
              */
-            if (val["cmd"] == "msg") {
-                string contentS = val["content"].asString();
-                cout << "contentS" << contentS << endl;
-                char *contentC = new char[contentS.length() + 1];
-                strcpy(contentC, contentS.c_str());
-                cout << "contentC" << contentC << endl;
-                send_message(contentC, (int)contentS.length());
-                delete [] contentC;
+            char *content;
+            cout << val["cmd"].asString() << endl;
+            if (val["cmd"] == "signin") {
+                send_message("ok\n");
+            }
+            else if (val["cmd"] == "msg") {
+                send_message(val["content"].asString());
             }
             else
                 cout << message << endl;
+            delete [] content;
         }
         cout << 13 << endl;
     }
@@ -137,12 +157,18 @@ void *clnt_connection(void *arg) {
     
 }
 
-void send_message(char * message, int len) {
+void send_message(string str) {
+    //str to charPtr
+    int len = (int)str.length();
+    char *message = new char[len + 1];
+    strcpy(message, str.c_str());
+
     int i;
     pthread_mutex_lock(&mutx);
     for(i=0;i<clnt_number;i++)
         write(clnt_socks[i], message, len);
     pthread_mutex_unlock(&mutx);
+    delete [] message;
 }
 
 void error_handling(char const* message) {
