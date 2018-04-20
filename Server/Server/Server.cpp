@@ -17,7 +17,7 @@ pthread_mutex_t Server::mutx;
 
 
 void Server::openServer(const char* port) {
-    cout << "start" << endl;
+    cout << "805" << endl;
     if(pthread_mutex_init(&mutx,NULL))
         error_handling("mutex init error");
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
@@ -122,10 +122,20 @@ void *Server::clnt_connection(void *arg) {
                                 result["msg"] = "success";
                                 Value content;
                                 content["userid"] = userid;
-                                content["users"] = dbManager->getAllUser();
+                                Value users = dbManager->getAllUser();
+                                content["users"] = users;
                                 content["chats"] = dbManager->getAllChat();
                                 result["content"] = content;
                                 user_socks.insert({userid, clnt_sock});
+                                
+                                //다른사람들에게 현 사람의 status가 바뀌었음을 알림.
+                                Value forOthers;
+                                forOthers["cmd"] = "otherusercome";
+                                forOthers["result"] = static_cast<int>(StatusCode::Sucess);
+                                forOthers["msg"] = "success";
+                                forOthers["content"] = users;
+                                send_message(forOthers, clnt_sock*-1);
+                                
                                 send_message(result, clnt_sock);
                             }
                             else {
@@ -152,17 +162,19 @@ void *Server::clnt_connection(void *arg) {
                     }
                 }
                 else if (val["cmd"] == "msg") {
-                    dbManager->addChat(val["from"].asString(), val["to"].asString(), val["msg"].asString());
+                    dbManager->addChat(val["content"]["from"].asString(), val["content"]["to"].asString(), val["content"]["msg"].asString());
+//                    cout << "here: " << message << endl;
                     Value result;
                     result["cmd"] = val["cmd"];
                     result["result"] = static_cast<int>(StatusCode::Sucess);
                     result["msg"] = "success";
-                    Value content;
-                    content["from"] = val["from"];
-                    content["to"] = val["to"];
-                    content["msg"] = val["msg"];
-                    result["content"] = content;
-                    send_message(result, -1);
+                    result["content"] = val["content"];
+//                    Value content;
+//                    content["from"] = val["content"]["from"];
+//                    content["to"] = val["content"]["to"];
+//                    content["msg"] = val["content"]["msg"];
+//                    result["content"] = content;
+                    send_message(result, 0);
                 }
                 else if (val["cmd"] == "status") {
                     if (dbManager->updateUserStatus(val["content"]["userid"].asString(), val["content"]["status"].asString())) {
@@ -174,13 +186,33 @@ void *Server::clnt_connection(void *arg) {
                         content["userid"] = val["content"]["userid"];
                         content["status"] = val["content"]["status"];
                         result["content"] = content;
-                        send_message(result, -1);
+                        send_message(result, 0);
+                    } else {
+                        cout << "else" << endl;
+                        Value result;
+                        result["cmd"] = val["cmd"];
+                        result["result"] = static_cast<int>(StatusCode::CouldntFindReason);
+                        result["msg"] = "CouldntFindReason";
+                        send_message(result, 0);
+                    }
+                }
+                else if (val["cmd"] == "name") {
+                    if (dbManager->updateUserName(val["content"]["userid"].asString(), val["content"]["name"].asString())) {
+                        Value result;
+                        result["cmd"] = val["cmd"];
+                        result["result"] = static_cast<int>(StatusCode::Sucess);
+                        result["msg"] = "success";
+                        Value content;
+                        content["userid"] = val["content"]["userid"];
+                        content["name"] = val["content"]["name"];
+                        result["content"] = content;
+                        send_message(result, 0);
                     } else {
                         Value result;
                         result["cmd"] = val["cmd"];
                         result["result"] = static_cast<int>(StatusCode::CouldntFindReason);
                         result["msg"] = "CouldntFindReason";
-                        send_message(result, -1);
+                        send_message(result, 0);
                     }
                 }
                 else if (val["cmd"] == "signout") {
@@ -247,14 +279,25 @@ void Server::send_message(Value val, int sock) {
     
     str.erase(remove(str.begin(), str.end(), '\n'), str.end());
     str += "\n";
-    
+    cout << str << endl;
     int len = (int)str.length();
     char *message = new char[len + 1];
     strcpy(message, str.c_str());
-    if (sock != -1) {
+    //0이면 전체에게, 0미만이면 해당사람빼고 모두, 0이상이면 그사람에게만
+    if (sock == 0) {
         pthread_mutex_lock(&mutx);
-        for(vector<int>::iterator it = clnt_socks.begin();  it != clnt_socks.end(); it++)
-            write(*it, message, len);
+        for (int i = 0; i < clnt_socks.size(); i++) {
+            write(clnt_socks[i], message, len);
+        }
+//        for(vector<int>::iterator it = clnt_socks.begin();  it != clnt_socks.end(); it++)
+//            write(*it, message, len);
+        pthread_mutex_unlock(&mutx);
+    } else if (sock < 0) {
+        pthread_mutex_lock(&mutx);
+        for (int i = 0; i < clnt_socks.size(); i++) {
+            if (clnt_socks[i] != sock*-1)
+                write(clnt_socks[i], message, len);
+        }
         pthread_mutex_unlock(&mutx);
     } else {
         write(sock, message, len);

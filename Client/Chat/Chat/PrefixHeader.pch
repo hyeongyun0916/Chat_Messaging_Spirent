@@ -15,7 +15,8 @@
 #import "DefineString.h"
 #import "Toast.h"
 #import "Singleton.h"
-#import "UIViewController+Spirent.h"
+#import "SideViewController.h"
+//#import "UIViewController+Spirent.h"
 #import "SocketSingleton.h"
 #import "EntranceViewController.h"
 

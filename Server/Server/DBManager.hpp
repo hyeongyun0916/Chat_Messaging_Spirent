@@ -42,6 +42,7 @@ public:
     bool isExistUser(string userid);
     bool isUser(string userid, string userpw);
     bool updateUserStatus(string userid, string status);
+    bool updateUserName(string userid, string name);
     bool removeUser(string userid, string userpw);
     bool changeOnlineifOffline(string userid);
     bool changeOfflineifOnline(string userid);

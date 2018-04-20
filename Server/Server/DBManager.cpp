@@ -38,6 +38,11 @@ bool DBManager::updateUserStatus(string userid, string status) {
     return result;
 }
 
+bool DBManager::updateUserName(string userid, string name) {
+    int result = stmt->executeUpdate("update `User` SET name='"+name+"' where id='"+userid+"';");
+    return result;
+}
+
 bool DBManager::removeUser(string userid, string userpw) {
     int result = stmt->executeUpdate("DELETE FROM `User` \
                                      WHERE id='"+userid+"' and pw='"+userpw+"';");

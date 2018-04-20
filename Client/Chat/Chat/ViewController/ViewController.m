@@ -11,11 +11,13 @@
 
 #import "ViewController.h"
 #import "EntranceViewController.h"
+#import "SettingViewController.h"
 
 @interface ViewController () <SockDelegate, UITableViewDelegate, UITableViewDataSource> {
     NSMutableArray *busyChatArr;
     __weak IBOutlet UITextField *msgTF;
     __weak IBOutlet UITableView *chatTable;
+    SettingViewController *settingVC;
 }
 
 @end
@@ -38,10 +40,14 @@
     }
     [chatTable setRowHeight:UITableViewAutomaticDimension];
     [chatTable setEstimatedRowHeight:40.f];
+    
+    UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
+    settingVC = [storyboard instantiateViewControllerWithIdentifier:@"leftSlideMenuVC"];
 }
 
 - (IBAction)sendMessage:(id)sender {
-    [SocketSingleton.getInstance sendCmd:@"msg" Str:msgTF.text];
+//    [SocketSingleton.getInstance sendCmd:@"msg" Str:msgTF.text];
+    [SocketSingleton.getInstance sendCmd:@"msg" Content:@{@"from":_user[@"userid"], @"to":@"", @"msg":msgTF.text}];
 }
 
 - (IBAction)disConnectToServer:(id)sender {
@@ -66,6 +72,22 @@
     DLog(@"");
 }
 
+//- (BOOL)checkIsSideVCOpen:(NSString *)storyboardID {
+//    for (id vc in self.childViewControllers)
+//        if ([[vc valueForKey:@"storyboardIdentifier"] isEqualToString:storyboardID]) {
+//            [vc closeSelf];
+//            return YES;
+//        }
+//    return NO;
+//}
+
+- (IBAction)openLeftMenu {
+    [settingVC setUser:_user];
+    [settingVC addSideVCto:self isDimmed:YES fromDirection:SideVCDirectionFromLeft];
+}
+
+#pragma mark SocketDelegate
+
 - (void)didRead:(NSDictionary *)dic {
     DLog(@"%@", dic);
     if ([dic[@"result"] integerValue]) {
@@ -83,6 +105,11 @@
         else if ([dic[@"cmd"] isEqualToString:@"status"]) {
             if ([_user[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
                 _user[@"status"] = dic[@"content"][@"status"];
+                [settingVC setUser:_user];
+                if ([_user[@"status"] isEqualToString:@"online"]) {
+                    [_chatArr addObjectsFromArray:busyChatArr];
+                    busyChatArr = [NSMutableArray new];
+                }
             }
             for (NSMutableDictionary *user in _userArr) {
                 if ([user[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
@@ -90,6 +117,21 @@
                     break;
                 }
             }
+        }
+        else if ([dic[@"cmd"] isEqualToString:@"name"]) {
+            if ([_user[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
+                _user[@"name"] = dic[@"content"][@"name"];
+                [settingVC setUser:_user];
+            }
+            for (NSMutableDictionary *user in _userArr) {
+                if ([user[@"userid"] isEqualToString:dic[@"content"][@"name"]]) {
+                    user[@"status"] = dic[@"content"][@"name"];
+                    break;
+                }
+            }
+        }
+        else if ([dic[@"cmd"] isEqualToString:@"otherusercome"]) {
+            _userArr = dic[@"content"];
         }
     }
 }
@@ -107,7 +149,8 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"ChatCell"];
-    [(UILabel*)[cell viewWithTag:2] setText:_chatArr[indexPath.row]];
+    [(UILabel*)[cell viewWithTag:1] setText:_chatArr[indexPath.row][@"from"]];
+    [(UILabel*)[cell viewWithTag:2] setText:_chatArr[indexPath.row][@"msg"]];
     return cell;
 }
 

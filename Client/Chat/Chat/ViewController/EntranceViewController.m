@@ -24,6 +24,7 @@
     // Do any additional setup after loading the view.
     
     [Singleton getInstance];    //initSingleton
+    [SocketSingleton.getInstance setDelegate:self];
 }
 
 - (void)didReceiveMemoryWarning {
