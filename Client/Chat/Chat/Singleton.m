@@ -33,7 +33,6 @@
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification {
-    CGRect rectKeyboard; // 키보드에 대한 위치와 크기의 사각 영역을 나타낼 CGRect 구조체입니다.
     _isKeyboard = YES;
 }
 
@@ -46,7 +45,7 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [UIApplication.sharedApplication.windows.lastObject hideAllToasts];
         [UIApplication.sharedApplication.windows.firstObject hideAllToasts];
-        if (_isKeyboard)
+        if (self->_isKeyboard)
             [UIApplication.sharedApplication.windows.lastObject makeToast:str];
         else
             [UIApplication.sharedApplication.windows.firstObject makeToast:str];

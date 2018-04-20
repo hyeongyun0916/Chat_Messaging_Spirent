@@ -13,8 +13,8 @@
 #import "EntranceViewController.h"
 
 @interface ViewController () <SockDelegate, UITableViewDelegate, UITableViewDataSource> {
+    NSMutableArray *busyChatArr;
     __weak IBOutlet UITextField *msgTF;
-    NSMutableArray* chatArr;
     __weak IBOutlet UITableView *chatTable;
 }
 
@@ -27,23 +27,21 @@
     // Do any additional setup after loading the view, typically from a nib.
     
     [SocketSingleton.getInstance setDelegate:self];
-    chatArr = [NSMutableArray new];
+    busyChatArr = [NSMutableArray new];
+    //채팅이 없다면 초기화
+    if (!_chatArr || [_chatArr isEqual:[NSNull null]]) {
+        _chatArr = [NSMutableArray new];
+    }
+    //나 한명이라도 있기때문에 있을수 없는 현상임.
+    if (!_userArr || [_userArr isEqual:[NSNull null]]) {
+        _userArr = [NSMutableArray new];
+    }
     [chatTable setRowHeight:UITableViewAutomaticDimension];
     [chatTable setEstimatedRowHeight:40.f];
 }
 
-- (IBAction)connectToServer:(id)sender {
-
-}
-
 - (IBAction)sendMessage:(id)sender {
     [SocketSingleton.getInstance sendCmd:@"msg" Str:msgTF.text];
-//    NSDictionary *dic = @{@"cmd":@"msg", @"content":[NSString stringWithFormat:@"%@\n", msgTF.text]};
-//    NSData* kData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
-//    NSString* kJsonStr = [[NSString alloc] initWithData:kData encoding:NSUTF8StringEncoding];
-//    NSData *requestData = [kJsonStr dataUsingEncoding:NSUTF8StringEncoding];
-//    [clientSocket writeData:requestData withTimeout:-1 tag:0];
-//    [clientSocket readDataToData:GCDAsyncSocket.LFData withTimeout:-1 tag:0];
 }
 
 - (IBAction)disConnectToServer:(id)sender {
@@ -57,6 +55,9 @@
 }
 
 - (IBAction)close:(id)sender {
+    NSString* userID = _user[@"userid"];
+    NSString* status = _user[@"status"];
+    [SocketSingleton.getInstance sendCmd:@"signout" Content:@{@"userid":userID, @"status":status}];
     [SocketSingleton.getInstance setDelegate:(EntranceViewController *)self.presentingViewController];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -67,6 +68,30 @@
 
 - (void)didRead:(NSDictionary *)dic {
     DLog(@"%@", dic);
+    if ([dic[@"result"] integerValue]) {
+        [Singleton.getInstance toast:dic[@"msg"]];
+    } else {
+        if ([dic[@"cmd"] isEqualToString:@"msg"]) {
+            if ([_user[@"status"] isEqualToString:@"busy"]) {
+                //timeStamp추가
+                [busyChatArr addObject:dic[@"content"]];
+            } else {
+                [_chatArr addObject:dic[@"content"]];
+                [chatTable reloadData];
+            }
+        }
+        else if ([dic[@"cmd"] isEqualToString:@"status"]) {
+            if ([_user[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
+                _user[@"status"] = dic[@"content"][@"status"];
+            }
+            for (NSMutableDictionary *user in _userArr) {
+                if ([user[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
+                    user[@"status"] = dic[@"content"][@"status"];
+                    break;
+                }
+            }
+        }
+    }
 }
 
 //- (void)didReadString:(NSString *)str {
@@ -77,12 +102,12 @@
 #pragma mark TableDelegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return chatArr.count;
+    return _chatArr.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"ChatCell"];
-    [(UILabel*)[cell viewWithTag:2] setText:chatArr[indexPath.row]];
+    [(UILabel*)[cell viewWithTag:2] setText:_chatArr[indexPath.row]];
     return cell;
 }
 

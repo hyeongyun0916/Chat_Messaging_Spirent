@@ -115,16 +115,26 @@ void *Server::clnt_connection(void *arg) {
                     if (user_socks.find(userid) == user_socks.end()) {
                         //isMember 가입된유저인지 체크
                         if (dbManager->isUser(userid, val["content"]["userpw"].asString())) {
-                            Value result;
-                            result["cmd"] = val["cmd"];
-                            result["result"] = static_cast<int>(StatusCode::Sucess);
-                            result["msg"] = "success";
-                            Value content;
-                            content["users"] = dbManager->getAllUser();
-                            content["chats"] = dbManager->getAllChat();
-                            result["content"] = content;
-                            user_socks.insert({userid, clnt_sock});
-                            send_message(result, clnt_sock);
+                            if (dbManager->changeOnlineifOffline(userid)) {
+                                Value result;
+                                result["cmd"] = val["cmd"];
+                                result["result"] = static_cast<int>(StatusCode::Sucess);
+                                result["msg"] = "success";
+                                Value content;
+                                content["userid"] = userid;
+                                content["users"] = dbManager->getAllUser();
+                                content["chats"] = dbManager->getAllChat();
+                                result["content"] = content;
+                                user_socks.insert({userid, clnt_sock});
+                                send_message(result, clnt_sock);
+                            }
+                            else {
+                                Value result;
+                                result["cmd"] = val["cmd"];
+                                result["result"] = static_cast<int>(StatusCode::CouldntFindReason);
+                                result["msg"] = "CouldntFindReason";
+                                send_message(result, clnt_sock);
+                            }
                         }
                         else {
                             Value result;
@@ -142,21 +152,28 @@ void *Server::clnt_connection(void *arg) {
                     }
                 }
                 else if (val["cmd"] == "msg") {
+                    dbManager->addChat(val["from"].asString(), val["to"].asString(), val["msg"].asString());
                     Value result;
                     result["cmd"] = val["cmd"];
-                    result["from"] = val["from"];
-                    result["to"] = val["to"];
-                    result["msg"] = val["msg"];
                     result["result"] = static_cast<int>(StatusCode::Sucess);
                     result["msg"] = "success";
+                    Value content;
+                    content["from"] = val["from"];
+                    content["to"] = val["to"];
+                    content["msg"] = val["msg"];
+                    result["content"] = content;
                     send_message(result, -1);
                 }
                 else if (val["cmd"] == "status") {
-                    if (dbManager->updateUserStatus(val["content"]["userid"].asString(), val["content"]["status"].asInt())) {
+                    if (dbManager->updateUserStatus(val["content"]["userid"].asString(), val["content"]["status"].asString())) {
                         Value result;
                         result["cmd"] = val["cmd"];
                         result["result"] = static_cast<int>(StatusCode::Sucess);
                         result["msg"] = "success";
+                        Value content;
+                        content["userid"] = val["content"]["userid"];
+                        content["status"] = val["content"]["status"];
+                        result["content"] = content;
                         send_message(result, -1);
                     } else {
                         Value result;
@@ -171,6 +188,8 @@ void *Server::clnt_connection(void *arg) {
                     result["cmd"] = val["cmd"];
                     result["result"] = static_cast<int>(StatusCode::Sucess);
                     result["msg"] = "success";
+                    string status = val["content"]["status"] == "busy" ? "busy" : "offline";
+                    dbManager->updateUserStatus(val["content"]["userid"].asString(), status);
                     pthread_mutex_lock(&mutx);
                     //user_socks에서 지워주기
                     for (map<string,int>::iterator it = user_socks.begin(); it != user_socks.end(); it++) {
@@ -203,7 +222,9 @@ void *Server::clnt_connection(void *arg) {
     //user_socks에서 지워주기 (signout을 하고 나가지 않은 경우)
     for (map<string,int>::iterator it = user_socks.begin(); it != user_socks.end(); it++) {
         if (it->second == clnt_sock) {
+            cout << "changeOfflineifOnline: " << dbManager->changeOfflineifOnline(it->first) << endl;
             user_socks.erase(it);
+            //비정상종료시
             break;
         }
     }
@@ -227,11 +248,9 @@ void Server::send_message(Value val, int sock) {
     str.erase(remove(str.begin(), str.end(), '\n'), str.end());
     str += "\n";
     
-    cout << "str: \n" << str << endl;
     int len = (int)str.length();
     char *message = new char[len + 1];
     strcpy(message, str.c_str());
-    cout << "message: \n" << str << endl;
     if (sock != -1) {
         pthread_mutex_lock(&mutx);
         for(vector<int>::iterator it = clnt_socks.begin();  it != clnt_socks.end(); it++)

@@ -22,22 +22,19 @@ bool DBManager::addUser(string userid, string userpw, string name) {
 }
 
 bool DBManager::isExistUser(string userid) {
-    res = stmt->executeQuery("select * from `User` \
+    res = stmt->executeQuery("select id from `User` \
                              where id='"+userid+"';");
     return res->rowsCount();
 }
 
 bool DBManager::isUser(string userid, string userpw) {
-    res = stmt->executeQuery("select * from `User` \
+    res = stmt->executeQuery("select id from `User` \
                              where id='"+userid+"' and pw='"+userpw+"';");
     return res->rowsCount();
 }
 
-bool DBManager::updateUserStatus(string userid, int status) {
-    PreparedStatement  *prep_stmt;
-    prep_stmt = con->prepareStatement("update `User` SET status=? where id='"+userid+"';");
-    prep_stmt->setInt(1, status);
-    int result = prep_stmt->executeUpdate();
+bool DBManager::updateUserStatus(string userid, string status) {
+    int result = stmt->executeUpdate("update `User` SET status='"+status+"' where id='"+userid+"';");
     return result;
 }
 
@@ -47,13 +44,36 @@ bool DBManager::removeUser(string userid, string userpw) {
     return result;
 }
 
+bool DBManager::changeOnlineifOffline(string userid) {
+//    ResultSet* res2;
+    res = stmt->executeQuery("select id, status from `User` where id='"+userid+"';");
+    res->next();
+    if (res->getString("status") == "offline") {
+        return updateUserStatus(userid, "online");
+    }
+    else
+        return true;
+}
+
+bool DBManager::changeOfflineifOnline(string userid) {
+    //    ResultSet* res2;
+    res = stmt->executeQuery("select id, status from `User` where id='"+userid+"';");
+    res->next();
+    if (res->getString("status") == "online") {
+        return updateUserStatus(userid, "offline");
+    }
+    else
+        return true;
+}
+
 Value DBManager::getAllUser() {
     Value users;
-    res = stmt->executeQuery("select * from `User`;");
+    res = stmt->executeQuery("select id, name, status from `User`;");
     while (res->next()) {
         Value user;
+        user["userid"] = res->getString("id").c_str();
         user["name"] = res->getString("name").c_str();
-        user["state"] = res->getString("status").c_str();
+        user["status"] = res->getString("status").c_str();
         users.append(user);
     }
     return users;
@@ -61,7 +81,7 @@ Value DBManager::getAllUser() {
 
 Value DBManager::getAllChat() {
     Value chats;
-    res = stmt->executeQuery("select * from `Chat`;");
+    res = stmt->executeQuery("select * from `Message`;");
     while (res->next()) {
         Value chat;
         chat["chatno"] = res->getInt("chatno");

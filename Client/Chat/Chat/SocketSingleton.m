@@ -35,7 +35,7 @@
 - (void)initSocketSingleton {
     clientSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
     host = @"172.30.1.35";
-    portNumber = 1111;
+    portNumber = 1112;
     
     NSError *error = nil;
     if (![clientSocket connectToHost:host onPort:portNumber error:&error])
@@ -84,7 +84,6 @@
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag {
     NSString* str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     DLog(@"%@", str);
-    UIViewController *vc = [((AppDelegate*)[UIApplication sharedApplication].delegate).window.rootViewController my_visibleViewController];
     NSData *jsonData = [str dataUsingEncoding:NSUTF8StringEncoding];
     NSError *e;
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&e];

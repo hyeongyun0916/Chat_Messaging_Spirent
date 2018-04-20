@@ -10,6 +10,9 @@
 
 @interface ViewController : UIViewController
 
+@property (nonatomic, strong) NSMutableDictionary *user;
+@property (nonatomic, strong) NSMutableArray *chatArr;
+@property (nonatomic, strong) NSMutableArray *userArr;
 
 @end
 

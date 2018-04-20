@@ -24,6 +24,12 @@ using namespace std;
 using namespace sql;
 using namespace Json;
 
+enum class UserStatus {
+    offline = 1,
+    online = 2,
+    busy = 3
+};
+
 class DBManager {
 private:
     Driver *driver;
@@ -35,8 +41,10 @@ public:
     bool addUser(string userid, string userpw, string name);
     bool isExistUser(string userid);
     bool isUser(string userid, string userpw);
-    bool updateUserStatus(string userid, int status);
+    bool updateUserStatus(string userid, string status);
     bool removeUser(string userid, string userpw);
+    bool changeOnlineifOffline(string userid);
+    bool changeOfflineifOnline(string userid);
     
     Value getAllUser();
     Value getAllChat();

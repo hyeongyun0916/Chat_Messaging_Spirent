@@ -7,6 +7,7 @@
 //
 
 #import "EntranceViewController.h"
+#import "ViewController.h"
 
 @interface EntranceViewController () {
     __weak IBOutlet UITextField *idTF;
@@ -21,6 +22,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    [Singleton getInstance];    //initSingleton
 }
 
 - (void)didReceiveMemoryWarning {
@@ -28,19 +31,32 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)startSocket:(id)sender {
-    [SocketSingleton.getInstance setDelegate:self];
-}
-
 - (IBAction)signIn:(id)sender {
     [SocketSingleton.getInstance sendCmd:@"signin" Content:@{@"userid":idTF.text,@"userpw":pwTF.text}];
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(NSDictionary *)sender {
+    if ([segue.destinationViewController isKindOfClass:ViewController.class]) {
+        ViewController* VC = segue.destinationViewController;
+        VC.userArr = sender[@"users"];
+        VC.chatArr = sender[@"chats"];  //timestamp변경
+        for (NSDictionary* user in sender[@"users"]) {
+            if ([sender[@"userid"] isEqualToString:user[@"userid"]]) {
+                VC.user = [user mutableCopy];
+                break;
+            }
+        }
+    }
+    DLog(@"");
 }
 
 #pragma mark SocketDelegate
 
 - (void)didRead:(NSDictionary *)dic {
     if ([dic[@"result"] integerValue] == StatusSucess) {
-        [self performSegueWithIdentifier:@"entrance" sender:nil];
+        if ([dic[@"cmd"] isEqualToString:@"signin"]) {
+            [self performSegueWithIdentifier:@"entrance" sender:dic[@"content"]];
+        }
     } else {
         [Singleton.getInstance toast:dic[@"msg"]];
     }
