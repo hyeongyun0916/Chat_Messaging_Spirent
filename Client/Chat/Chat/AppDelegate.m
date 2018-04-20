@@ -17,7 +17,13 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-
+//    UITextField *lagFreeField = [[UITextField alloc] init];
+//    lagFreeField.frame = CGRectMake(-999999, 0, 200, 200);
+//    lagFreeField.backgroundColor = [UIColor blackColor];
+//    [self.window addSubview:lagFreeField];
+//    [lagFreeField becomeFirstResponder];
+//    [lagFreeField resignFirstResponder];
+//    [lagFreeField removeFromSuperview];
     return YES;
 }
 

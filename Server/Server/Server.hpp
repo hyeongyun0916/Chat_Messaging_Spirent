@@ -19,10 +19,22 @@
 #include <netinet/in.h>
 #include <pthread.h>
 #include <vector>
+#include <map>
 
 #include "DBManager.hpp"
+#include "json/json.h"
 
+using namespace Json;
 using namespace std;
+
+enum class StatusCode {
+    Sucess = 0,
+    InvalidCmd = -100,
+    InvalidPram = -200,
+    NoDataFound = 100,
+    AlreadyExists = 200,
+    CouldntFindReason = 999
+};
 
 class Server {
 private:
@@ -31,19 +43,20 @@ private:
     struct sockaddr_in clnt_addr;
     socklen_t clnt_addr_size;
     
+    //static for thread
     static DBManager* dbManager;
     static vector<int> clnt_socks;
+    static map<string, int> user_socks;
     static pthread_mutex_t mutx;
     
 public:
     void openServer(const char* port);
-    void connectDB();
     void* clnt_connection(void * arg);
     static void* clnt_connection_wrapper(void* object) {
         reinterpret_cast<Server*>(object)->clnt_connection(object);
         return 0;
     }
-    void send_message(string str);
+    void send_message(Value val, int sock);
     void error_handling(char const* message);
 };
 

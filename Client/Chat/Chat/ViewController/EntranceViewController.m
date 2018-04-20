@@ -8,7 +8,11 @@
 
 #import "EntranceViewController.h"
 
-@interface EntranceViewController ()
+@interface EntranceViewController () {
+    __weak IBOutlet UITextField *idTF;
+    __weak IBOutlet UITextField *pwTF;
+    
+}
 
 @end
 
@@ -29,13 +33,17 @@
 }
 
 - (IBAction)signIn:(id)sender {
-    [SocketSingleton.getInstance sendCmd:@"signin" Content:@{@"userid":@"mhg5303",@"userpw":@"root"}];
+    [SocketSingleton.getInstance sendCmd:@"signin" Content:@{@"userid":idTF.text,@"userpw":pwTF.text}];
 }
 
 #pragma mark SocketDelegate
 
-- (void)didReadString:(NSString *)str {
-    [self performSegueWithIdentifier:@"entrance" sender:nil];
+- (void)didRead:(NSDictionary *)dic {
+    if ([dic[@"result"] integerValue] == StatusSucess) {
+        [self performSegueWithIdentifier:@"entrance" sender:nil];
+    } else {
+        [Singleton.getInstance toast:dic[@"msg"]];
+    }
 }
 
 /*

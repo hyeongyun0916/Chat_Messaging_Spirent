@@ -7,18 +7,17 @@
 //
 
 #include "Server.hpp"
-#include "json/json.h"
-
-using namespace Json;
 
 #define BUFSIZE 1024
 
 vector<int> Server::clnt_socks = vector<int>();
 DBManager* Server::dbManager = new DBManager();
+map<string, int> Server::user_socks = map<string, int>();
 pthread_mutex_t Server::mutx;
 
+
 void Server::openServer(const char* port) {
-    connectDB();
+    cout << "start" << endl;
     if(pthread_mutex_init(&mutx,NULL))
         error_handling("mutex init error");
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
@@ -28,46 +27,31 @@ void Server::openServer(const char* port) {
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(atoi(port));
-    cout << 1 << endl;
+    dbManager->getAllUser();
     if(::bind(serv_sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1)
         error_handling("bind() error");
     if(listen(serv_sock, 5) == -1)
         error_handling("listen() error");
-    cout << 2 << endl;
     while(1) {
         pthread_t thread;
-        cout << 3 << endl;
         clnt_addr_size = sizeof(clnt_addr);
-        cout << 4 << endl;
         int clnt_sock;
         clnt_sock = accept(serv_sock, (struct sockaddr *)&clnt_addr, &clnt_addr_size);
-        cout << 5 << endl;
         pthread_mutex_lock(&mutx);
-        cout << 6 << endl;
         clnt_socks.push_back(clnt_sock);
         pthread_mutex_unlock(&mutx);
-        cout << 7 << endl;
         pthread_create(&thread, NULL, &Server::clnt_connection_wrapper, (void*)(size_t)clnt_sock);
-        cout << 8 << endl;
         printf(" IP : %s \n", inet_ntoa(clnt_addr.sin_addr));
-        cout << 9 << endl;
         int result;
         pthread_join(thread, (void **)&result);
         cout << "result: " << result << endl;
     }
 }
 
-void Server::connectDB() {
-    dbManager = new DBManager();
-}
-
 void *Server::clnt_connection(void *arg) {
-    cout << 11 << endl;
     int clnt_sock = (int)(size_t)arg;
     int str_len=0;
     char message[BUFSIZE];
-//    int i;
-    cout << 12 << endl;
     while((str_len=read(clnt_sock, message, sizeof(message))) != 0 ) {
         Value val;
         CharReaderBuilder rBuiilder;
@@ -76,33 +60,154 @@ void *Server::clnt_connection(void *arg) {
         if (reader->parse(message, message+str_len, &val, &errors)) {
             /*
              cmd type
+             isexist
              signin
              singup
              signout
              status
              msg
              */
-            cout << val["cmd"].asString() << endl;
-            
-            if (val["cmd"] == "signin") {
-                
-                if (dbManager->isUser(val["content"]["userid"].asString(), val["content"]["userpw"].asString()))
-                    send_message("success\n");
-                else
-                send_message("fail\n");
+//            cout << val["cmd"].asString() << endl;
+            if (val["cmd"]) {
+                if (val["cmd"] == "isexist") {
+                    //해당 아이디가 존재함 -> 가입불가
+                    cout << 0 << endl;
+                    if (dbManager->isExistUser(val["content"]["userid"].asString())) {
+                        Value result;
+                        result["cmd"] = val["cmd"];
+                        result["result"] = static_cast<int>(StatusCode::Sucess);
+                        result["msg"] = "Alreadyexist";
+                        cout << 1 << endl;
+                        send_message(result, clnt_sock);
+                    }
+                    //해당 아이디가 존재하지 않음 -> 가입가능
+                    else {
+                        Value result;
+                        result["cmd"] = val["cmd"];
+                        result["result"] = static_cast<int>(StatusCode::NoDataFound);
+                        result["msg"] = "NoDataFound";
+                        result["content"] = val["content"]["userid"];
+                        cout << 2 << endl;
+                        send_message(result, clnt_sock);
+                    }
+                }
+                else if (val["cmd"] == "signup") {
+                    if (dbManager->addUser(val["content"]["userid"].asString(), val["content"]["userpw"].asString(), val["content"]["name"].asString())) {
+                        //success signin
+                        Value result;
+                        result["cmd"] = val["cmd"];
+                        result["result"] = static_cast<int>(StatusCode::Sucess);
+                        result["msg"] = "success";
+                        send_message(result, clnt_sock);
+                    } else {
+                        //fail signup
+                        Value result;
+                        result["cmd"] = val["cmd"];
+                        result["result"] = static_cast<int>(StatusCode::CouldntFindReason);
+                        result["msg"] = "fail";
+                        send_message(result, clnt_sock);
+                    }
+                }
+                else if (val["cmd"] == "signin") {
+                    //userid가 없을때 예외처리 필요
+                    string userid = val["content"]["userid"].asString();
+                    //Duplicate Signin Check 중복로그인체크
+                    if (user_socks.find(userid) == user_socks.end()) {
+                        //isMember 가입된유저인지 체크
+                        if (dbManager->isUser(userid, val["content"]["userpw"].asString())) {
+                            Value result;
+                            result["cmd"] = val["cmd"];
+                            result["result"] = static_cast<int>(StatusCode::Sucess);
+                            result["msg"] = "success";
+                            Value content;
+                            content["users"] = dbManager->getAllUser();
+                            content["chats"] = dbManager->getAllChat();
+                            result["content"] = content;
+                            user_socks.insert({userid, clnt_sock});
+                            send_message(result, clnt_sock);
+                        }
+                        else {
+                            Value result;
+                            result["cmd"] = val["cmd"];
+                            result["result"] = static_cast<int>(StatusCode::NoDataFound);
+                            result["msg"] = "You are Not Member";
+                            send_message(result, clnt_sock);
+                        }
+                    } else {
+                        Value result;
+                        result["cmd"] = val["cmd"];
+                        result["result"] = static_cast<int>(StatusCode::AlreadyExists);
+                        result["msg"] = "Already SignIn";
+                        send_message(result, clnt_sock);
+                    }
+                }
+                else if (val["cmd"] == "msg") {
+                    Value result;
+                    result["cmd"] = val["cmd"];
+                    result["from"] = val["from"];
+                    result["to"] = val["to"];
+                    result["msg"] = val["msg"];
+                    result["result"] = static_cast<int>(StatusCode::Sucess);
+                    result["msg"] = "success";
+                    send_message(result, -1);
+                }
+                else if (val["cmd"] == "status") {
+                    if (dbManager->updateUserStatus(val["content"]["userid"].asString(), val["content"]["status"].asInt())) {
+                        Value result;
+                        result["cmd"] = val["cmd"];
+                        result["result"] = static_cast<int>(StatusCode::Sucess);
+                        result["msg"] = "success";
+                        send_message(result, -1);
+                    } else {
+                        Value result;
+                        result["cmd"] = val["cmd"];
+                        result["result"] = static_cast<int>(StatusCode::CouldntFindReason);
+                        result["msg"] = "CouldntFindReason";
+                        send_message(result, -1);
+                    }
+                }
+                else if (val["cmd"] == "signout") {
+                    Value result;
+                    result["cmd"] = val["cmd"];
+                    result["result"] = static_cast<int>(StatusCode::Sucess);
+                    result["msg"] = "success";
+                    pthread_mutex_lock(&mutx);
+                    //user_socks에서 지워주기
+                    for (map<string,int>::iterator it = user_socks.begin(); it != user_socks.end(); it++) {
+                        if (it->second == clnt_sock) {
+                            user_socks.erase(it);
+                            break;
+                        }
+                    }
+                    pthread_mutex_unlock(&mutx);
+                    send_message(result, clnt_sock);
+                }
+                else {
+                    Value result;
+                    result["cmd"] = val["cmd"];
+                    result["result"] = static_cast<int>(StatusCode::InvalidCmd);
+                    result["msg"] = "InvalidCmd";
+                    send_message(result, clnt_sock);
+                }
+            } else {
+                Value result;
+                result["cmd"] = "cmd";
+                result["result"] = static_cast<int>(StatusCode::InvalidPram);
+                result["msg"] = "InvalidPram";
+                send_message(result, clnt_sock);
             }
-            else if (val["cmd"] == "msg") {
-                send_message(val["content"].asString());
-            }
-            else
-                cout << message << endl;
-            
         }
-        cout << 13 << endl;
     }
-    cout << 14 << endl;
+    //유저가 나갔을때
     pthread_mutex_lock(&mutx);
-    cout << 15 << endl;
+    //user_socks에서 지워주기 (signout을 하고 나가지 않은 경우)
+    for (map<string,int>::iterator it = user_socks.begin(); it != user_socks.end(); it++) {
+        if (it->second == clnt_sock) {
+            user_socks.erase(it);
+            break;
+        }
+    }
+    //clnt_socks에서 지워주기
     for(vector<int>::iterator it = clnt_socks.begin();  it != clnt_socks.end(); it++) {
         if (*it == clnt_sock) {
             clnt_socks.erase(it);
@@ -110,22 +215,31 @@ void *Server::clnt_connection(void *arg) {
         }
     }
     pthread_mutex_unlock(&mutx);
-    cout << 16 << endl;
     close(clnt_sock);
-    cout << 17 << endl;
     return 0;
     
 }
 
-void Server::send_message(string str) {
+void Server::send_message(Value val, int sock) {
+    StreamWriterBuilder builder;
+    string str = writeString(builder, val);
+    
+    str.erase(remove(str.begin(), str.end(), '\n'), str.end());
+    str += "\n";
+    
+    cout << "str: \n" << str << endl;
     int len = (int)str.length();
     char *message = new char[len + 1];
     strcpy(message, str.c_str());
-    
-    pthread_mutex_lock(&mutx);
-    for(vector<int>::iterator it = clnt_socks.begin();  it != clnt_socks.end(); it++)
-        write(*it, message, len);
-    pthread_mutex_unlock(&mutx);
+    cout << "message: \n" << str << endl;
+    if (sock != -1) {
+        pthread_mutex_lock(&mutx);
+        for(vector<int>::iterator it = clnt_socks.begin();  it != clnt_socks.end(); it++)
+            write(*it, message, len);
+        pthread_mutex_unlock(&mutx);
+    } else {
+        write(sock, message, len);
+    }
     delete [] message;
     
 }

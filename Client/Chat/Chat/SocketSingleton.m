@@ -7,6 +7,7 @@
 //
 
 #import "SocketSingleton.h"
+#import "AppDelegate.h"
 
 @implementation SocketSingleton {
     GCDAsyncSocket *clientSocket;
@@ -47,7 +48,7 @@
     NSString* kJsonStr = [[NSString alloc] initWithData:kData encoding:NSUTF8StringEncoding];
     NSData *requestData = [kJsonStr dataUsingEncoding:NSUTF8StringEncoding];
     [clientSocket writeData:requestData withTimeout:-1 tag:0];
-    [clientSocket readDataToData:GCDAsyncSocket.LFData withTimeout:-1 tag:0];
+    [clientSocket readDataToData:GCDAsyncSocket.CRLFData withTimeout:-1 tag:0];
 }
 
 - (void)sendCmd:(NSString *)cmd Content:(NSDictionary *)content {
@@ -83,7 +84,30 @@
 - (void)socket:(GCDAsyncSocket *)sock didReadData:(NSData *)data withTag:(long)tag {
     NSString* str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     DLog(@"%@", str);
-    [_delegate didReadString:str];
+    UIViewController *vc = [((AppDelegate*)[UIApplication sharedApplication].delegate).window.rootViewController my_visibleViewController];
+    NSData *jsonData = [str dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *e;
+    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&e];
+    DLog(@"%@", dict);
+    [_delegate didRead:dict];
+//    if (![dict[@"result"] integerValue]) {
+//        [_delegate didRead:dict];
+//    } else {
+//        UIViewController *vc = [((AppDelegate*)[UIApplication sharedApplication].delegate).window.rootViewController my_visibleViewController];
+//        UIAlertController *alertcon = [UIAlertController
+//                                       alertControllerWithTitle:@"Error"
+//                                       message:dict[@"msg"] preferredStyle:UIAlertControllerStyleAlert];
+//
+//
+//        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil];
+//        [alertcon addAction:cancelAction];
+//
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            [vc presentViewController:alertcon animated:YES completion:nil];
+//        });
+//    }
+    
+//    [_delegate didReadString:str];
 //    [chatArr addObject:str];
 //    [chatTable reloadData];
 }

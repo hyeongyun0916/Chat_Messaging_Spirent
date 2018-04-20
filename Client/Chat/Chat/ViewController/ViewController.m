@@ -65,10 +65,14 @@
     DLog(@"");
 }
 
-- (void)didReadString:(NSString *)str {
-    [chatArr addObject:str];
-    [chatTable reloadData];
+- (void)didRead:(NSDictionary *)dic {
+    DLog(@"%@", dic);
 }
+
+//- (void)didReadString:(NSString *)str {
+//    [chatArr addObject:str];
+//    [chatTable reloadData];
+//}
 
 #pragma mark TableDelegate
 
