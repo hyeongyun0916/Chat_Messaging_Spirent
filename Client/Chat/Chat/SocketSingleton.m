@@ -34,7 +34,7 @@
 - (void)initSocketSingleton {
     clientSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
     host = @"172.30.1.35";
-    portNumber = 1112;
+    portNumber = 1111;
     
     NSError *error = nil;
     if (![clientSocket connectToHost:host onPort:portNumber error:&error])
@@ -48,7 +48,15 @@
     NSData *requestData = [kJsonStr dataUsingEncoding:NSUTF8StringEncoding];
     [clientSocket writeData:requestData withTimeout:-1 tag:0];
     [clientSocket readDataToData:GCDAsyncSocket.LFData withTimeout:-1 tag:0];
+}
 
+- (void)sendCmd:(NSString *)cmd Content:(NSDictionary *)content {
+    NSDictionary *dic = @{@"cmd":cmd, @"content":content};
+    NSData* kData = [NSJSONSerialization dataWithJSONObject:dic options:NSJSONWritingPrettyPrinted error:nil];
+    NSString* kJsonStr = [[NSString alloc] initWithData:kData encoding:NSUTF8StringEncoding];
+    NSData *requestData = [kJsonStr dataUsingEncoding:NSUTF8StringEncoding];
+    [clientSocket writeData:requestData withTimeout:-1 tag:0];
+    [clientSocket readDataToData:GCDAsyncSocket.LFData withTimeout:-1 tag:0];
 }
 
 #pragma SocketDelegate

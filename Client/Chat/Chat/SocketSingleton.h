@@ -14,6 +14,7 @@
 
 + (instancetype)getInstance;
 - (void)sendCmd:(NSString *)cmd Str:(NSString *)str;
+- (void)sendCmd:(NSString *)cmd Content:(NSDictionary *)content;
 
 @property (nonatomic, weak) id<SockDelegate> delegate;
 

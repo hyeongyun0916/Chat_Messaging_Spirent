@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		332FAFC22089DC8600F454C0 /* DBManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 332FAFC02089DC8600F454C0 /* DBManager.cpp */; };
+		335FA91C2089C2D800625333 /* Server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 335FA91A2089C2D700625333 /* Server.cpp */; };
 		33621F5520838F2900B5F13E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 33621F5420838F2900B5F13E /* main.cpp */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +25,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		332FAFC02089DC8600F454C0 /* DBManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DBManager.cpp; sourceTree = "<group>"; };
+		332FAFC12089DC8600F454C0 /* DBManager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DBManager.hpp; sourceTree = "<group>"; };
+		335FA91A2089C2D700625333 /* Server.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Server.cpp; sourceTree = "<group>"; };
+		335FA91B2089C2D800625333 /* Server.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Server.hpp; sourceTree = "<group>"; };
 		33621F5120838F2900B5F13E /* Server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Server; sourceTree = BUILT_PRODUCTS_DIR; };
 		33621F5420838F2900B5F13E /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -58,6 +64,10 @@
 			isa = PBXGroup;
 			children = (
 				33621F5420838F2900B5F13E /* main.cpp */,
+				335FA91A2089C2D700625333 /* Server.cpp */,
+				335FA91B2089C2D800625333 /* Server.hpp */,
+				332FAFC02089DC8600F454C0 /* DBManager.cpp */,
+				332FAFC12089DC8600F454C0 /* DBManager.hpp */,
 			);
 			path = Server;
 			sourceTree = "<group>";
@@ -118,6 +128,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				335FA91C2089C2D800625333 /* Server.cpp in Sources */,
+				332FAFC22089DC8600F454C0 /* DBManager.cpp in Sources */,
 				33621F5520838F2900B5F13E /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

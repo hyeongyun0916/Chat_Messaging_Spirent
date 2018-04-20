@@ -29,7 +29,7 @@
 }
 
 - (IBAction)signIn:(id)sender {
-    [SocketSingleton.getInstance sendCmd:@"signin" Str:@"signin"];
+    [SocketSingleton.getInstance sendCmd:@"signin" Content:@{@"userid":@"mhg5303",@"userpw":@"root"}];
 }
 
 #pragma mark SocketDelegate
