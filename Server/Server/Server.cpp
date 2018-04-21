@@ -208,8 +208,10 @@ void *Server::clnt_connection(void *arg) {
                         if (user_socks.find(val["content"]["to"].asString()) == user_socks.end()) {
                             cout << "it's whisper but couldn't find" << endl;
                             send_message(result, 0);
-                        } else
+                        } else {
                             send_message(result, user_socks[val["content"]["to"].asString()]);
+                            send_message(result, user_socks[val["content"]["from"].asString()]);
+                        }
                     }
                     
                 }

@@ -22,6 +22,7 @@
     __weak IBOutlet UIButton *toBtn;
     __weak IBOutlet NSLayoutConstraint *bottomLayout;
     NSDictionary* whisperUser;
+    __weak IBOutlet UIView *sendView;
 }
 
 @end
@@ -62,11 +63,19 @@
     [toBtn setTitle:whisperUser[@"name"] forState:UIControlStateNormal];
 }
 
-- (IBAction)sendMessage:(id)sender {
-    [SocketSingleton.getInstance sendCmd:@"msg" Content:@{@"from":_user[@"userid"], @"to":whisperUser[@"userid"], @"msg":msgTF.text}];
-    [msgTF setText:@""];
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    //scroll to bottom
+    [chatTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:MAX(0, _chatArr.count-1) inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
 }
 
+- (IBAction)sendMessage:(id)sender {
+    if (msgTF.text.length) {
+        [SocketSingleton.getInstance sendCmd:@"msg" Content:@{@"from":_user[@"userid"], @"to":whisperUser[@"userid"], @"msg":msgTF.text}];
+        [msgTF setText:@""];
+    } else
+        [Singleton.getInstance toast:@"input message"];
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -135,6 +144,9 @@
                 if ([_user[@"status"] isEqualToString:@"online"]) {
                     [_chatArr addObjectsFromArray:busyChatArr];
                     busyChatArr = [NSMutableArray new];
+                    [sendView setUserInteractionEnabled:YES];
+                } else {
+                    [sendView setUserInteractionEnabled:NO];
                 }
             }
             for (NSMutableDictionary *user in _userArr) {
@@ -212,6 +224,11 @@
     return newLength <= 800;
 }
 
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [self sendMessage:nil];
+    return YES;
+}
+
 #pragma mark TableDelegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -219,15 +236,17 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"ChatCell"];
+    UITableViewCell* cell;
+    if ([_chatArr[indexPath.row][@"to"] length]) {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"whisperCell"];
+        [(UILabel*)[cell viewWithTag:4] setText:[self getName:_chatArr[indexPath.row][@"to"]]];
+    } else {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"ChatCell"];
+    }
     [(UILabel*)[cell viewWithTag:1] setText:[self getName:_chatArr[indexPath.row][@"from"]]];
     [(UILabel*)[cell viewWithTag:2] setText:_chatArr[indexPath.row][@"msg"]];
     [(UILabel*)[cell viewWithTag:3] setText:_chatArr[indexPath.row][@"timestamp"]];
-    if ([_chatArr[indexPath.row][@"to"] length]) {
-        [cell.contentView setBackgroundColor:UIColor.orangeColor];
-    } else {
-        [cell.contentView setBackgroundColor:UIColor.whiteColor];
-    }
+    
     return cell;
 }
 

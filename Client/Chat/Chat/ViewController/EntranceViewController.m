@@ -48,7 +48,11 @@
                 break;
             }
         }
-        
+        //initialize chatArr if there is no data for chat
+        //채팅이 없다면 초기화
+        if (!VC.chatArr || [VC.chatArr isEqual:[NSNull null]]) {
+            VC.chatArr = [NSMutableArray new];
+        }
         //AddingTimeInterval
         //ServerTime    20180422004422
         //DBTime        2018-04-21 06:41:53
@@ -56,12 +60,30 @@
         [DBDF setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
         NSDateFormatter *chatDF = [[NSDateFormatter alloc] init];
         [chatDF setDateFormat:@"a h:mm"];
-        for (NSMutableDictionary *chat in VC.chatArr) {
-            NSDate *date = [DBDF dateFromString:chat[@"timestamp"]];
-            NSDate *resultDate = [date dateByAddingTimeInterval:Singleton.getInstance.interval];
-            NSString *chatTime = [chatDF stringFromDate:resultDate];
-            chat[@"timestamp"] = chatTime;
+        
+        for (int i = (int)VC.chatArr.count -1; i >= 0; i--) {
+            //remove if not mychat
+            BOOL isRemoved = NO;
+            if ([VC.chatArr[i][@"to"] length]) {
+                if (![sender[@"userid"] isEqualToString:VC.chatArr[i][@"to"]]
+                    && ![sender[@"userid"] isEqualToString:VC.chatArr[i][@"from"]]) {
+                    [VC.chatArr removeObjectAtIndex:i];
+                    isRemoved = YES;
+                }
+            }
+            if (!isRemoved) {
+                NSDate *date = [DBDF dateFromString:VC.chatArr[i][@"timestamp"]];
+                NSDate *resultDate = [date dateByAddingTimeInterval:Singleton.getInstance.interval];
+                NSString *chatTime = [chatDF stringFromDate:resultDate];
+                VC.chatArr[i][@"timestamp"] = chatTime;
+            }
         }
+//        for (NSMutableDictionary *chat in VC.chatArr) {
+//            NSDate *date = [DBDF dateFromString:chat[@"timestamp"]];
+//            NSDate *resultDate = [date dateByAddingTimeInterval:Singleton.getInstance.interval];
+//            NSString *chatTime = [chatDF stringFromDate:resultDate];
+//            chat[@"timestamp"] = chatTime;
+//        }
     }
     DLog(@"");
 }
