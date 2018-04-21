@@ -6,7 +6,7 @@ Client written by Objective-C.
 
 ## Run
 
-To run the Server project, clone the repo, and run `g++ main.cpp Server.cpp DBManager.cpp -I ./boost_1_67_0/ -I ./ -l mysqlcppconn -l jsoncpp -o chat.out -std=c++11` from the ./Server/Server directory.
+To run the Server project, clone the repo, and run `g++ main.cpp Server.cpp DBManager.cpp -I ./boost_1_67_0/ -I ./ -l mysqlcppconn -l jsoncpp -o chat.out -std=c++11` and run `./chat.out <port>` from the ./Server/Server directory.
 
 To run the Client project, clone the repo and open `./Client/Chat/Chat.xcworkspace` and run with Xcode.
 
