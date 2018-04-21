@@ -34,21 +34,25 @@
     
     [SocketSingleton.getInstance setDelegate:self];
     busyChatArr = [NSMutableArray new];
+    //initialize chatArr if there is no data for chat
     //채팅이 없다면 초기화
     if (!_chatArr || [_chatArr isEqual:[NSNull null]]) {
         _chatArr = [NSMutableArray new];
     }
+    //initialize userArr if there is no data for user
+    //but it wouldn't happen. because there are always 'all' and 'me'
     //나 한명이라도 있기때문에 있을수 없는 현상임.
     if (!_userArr || [_userArr isEqual:[NSNull null]]) {
         _userArr = [NSMutableArray new];
     }
+    //setting auto height
     [chatTable setRowHeight:UITableViewAutomaticDimension];
     [chatTable setEstimatedRowHeight:40.f];
     
     UIStoryboard* storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
     settingVC = [storyboard instantiateViewControllerWithIdentifier:@"leftSlideMenuVC"];
     
-    
+    //if keyboardup then fix textfield postion
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardDidShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     
@@ -58,22 +62,9 @@
     [toBtn setTitle:whisperUser[@"name"] forState:UIControlStateNormal];
 }
 
-//- (void)viewDidAppear:(BOOL)animated {
-//    [super viewDidAppear:animated];
-//    NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
-//    [userCV selectItemAtIndexPath:indexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
-//    [[userCV cellForItemAtIndexPath:indexPath] setSelected:YES];
-//    [[userCV cellForItemAtIndexPath:indexPath].contentView setBackgroundColor:UIColor.redColor];
-//}
-
 - (IBAction)sendMessage:(id)sender {
-//    [SocketSingleton.getInstance sendCmd:@"msg" Str:msgTF.text];
     [SocketSingleton.getInstance sendCmd:@"msg" Content:@{@"from":_user[@"userid"], @"to":whisperUser[@"userid"], @"msg":msgTF.text}];
     [msgTF setText:@""];
-}
-
-- (IBAction)disConnectToServer:(id)sender {
-//    clientSocket = nil;
 }
 
 
@@ -102,30 +93,12 @@
     [bottomLayout setConstant:0];
 }
 
-//- (BOOL)checkIsSideVCOpen:(NSString *)storyboardID {
-//    for (id vc in self.childViewControllers)
-//        if ([[vc valueForKey:@"storyboardIdentifier"] isEqualToString:storyboardID]) {
-//            [vc closeSelf];
-//            return YES;
-//        }
-//    return NO;
-//}
-
 - (IBAction)openLeftMenu {
     [settingVC setUser:_user];
     [settingVC addSideVCto:self isDimmed:YES fromDirection:SideVCDirectionFromLeft];
 }
 
 - (IBAction)showUserCV:(id)sender {
-//    for (int i = 0; i < _userArr.count; i++) {
-//        if ([whisperUser[@"userid"] isEqualToString:_userArr[i][@"userid"]]) {
-//            NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
-//            [userCV selectItemAtIndexPath:indexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
-//            [[userCV cellForItemAtIndexPath:indexPath] setSelected:YES];
-//            [[userCV cellForItemAtIndexPath:indexPath].contentView setBackgroundColor:UIColor.redColor];
-//            break;
-//        }
-//    }
     userCV.hidden ^= 1;
 }
 
@@ -137,24 +110,28 @@
         [Singleton.getInstance toast:dic[@"msg"]];
     } else {
         if ([dic[@"cmd"] isEqualToString:@"msg"]) {
+            //add timestamp
             NSDateFormatter *chatDF = [[NSDateFormatter alloc] init];
             [chatDF setDateFormat:@"a h:mm"];
             NSString *chatTime = [chatDF stringFromDate:NSDate.date];
             dic[@"content"][@"timestamp"] = chatTime;
             
+            //if user is busy then store in busychatarr
             if ([_user[@"status"] isEqualToString:@"busy"]) {
-                //timeStamp추가
                 [busyChatArr addObject:dic[@"content"]];
             } else {
                 [_chatArr addObject:dic[@"content"]];
                 [chatTable reloadData];
+                //scroll to bottom
                 [chatTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:MAX(0, _chatArr.count-1) inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
             }
         }
         else if ([dic[@"cmd"] isEqualToString:@"status"]) {
+            //if target is me
             if ([_user[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
                 _user[@"status"] = dic[@"content"][@"status"];
                 [settingVC setUser:_user];
+                //if busy to online then take busychat to chatarr
                 if ([_user[@"status"] isEqualToString:@"online"]) {
                     [_chatArr addObjectsFromArray:busyChatArr];
                     busyChatArr = [NSMutableArray new];
@@ -167,6 +144,7 @@
                 }
             }
             [chatTable reloadData];
+            //if whisperUser out(offline or busy)
             if ([whisperUser[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
                 if (![dic[@"content"][@"status"] isEqualToString:@"online"]) {
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -176,6 +154,7 @@
                 }
             }
         }
+        //name changed
         else if ([dic[@"cmd"] isEqualToString:@"name"]) {
             if ([_user[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
                 _user[@"name"] = dic[@"content"][@"name"];
@@ -188,6 +167,7 @@
                 }
             }
         }
+        //user out in etc..
         else if ([dic[@"cmd"] isEqualToString:@"userchanged"]) {
             _userArr = dic[@"content"];
             [_userArr insertObject:[@{@"userid":@"", @"name":@"All", @"status":@""} mutableCopy] atIndex:0];
@@ -209,10 +189,6 @@
     }
 }
 
-//- (void)didReadString:(NSString *)str {
-//    [chatArr addObject:str];
-//    [chatTable reloadData];
-//}
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     UITouch *touch = [touches anyObject];
     if (!([touch.view isKindOfClass:[UITextView class]] || [touch.view isKindOfClass:[UITextField class]]))
@@ -228,6 +204,7 @@
     return @"";
 }
 
+//limit chat msg
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     if(range.length + range.location > textField.text.length)
         return NO;
@@ -268,10 +245,6 @@
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"user" forIndexPath:indexPath];
     [(UILabel *)[cell viewWithTag:1] setText:_userArr[indexPath.item][@"name"]];
     [(UILabel *)[cell viewWithTag:2] setText:_userArr[indexPath.item][@"status"]];
-//    if (cell.isSelected)
-//        [cell.contentView setBackgroundColor:UIColor.redColor];
-//    else
-//        [cell.contentView setBackgroundColor:UIColor.whiteColor];
     return cell;
 }
 

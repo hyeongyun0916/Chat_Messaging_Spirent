@@ -38,6 +38,7 @@ enum class StatusCode {
 
 class Server {
 private:
+    //sock info
     int serv_sock;
     struct sockaddr_in serv_addr;
     struct sockaddr_in clnt_addr;
@@ -46,8 +47,8 @@ private:
     //static for thread
     static DBManager* dbManager;
     static vector<int> clnt_socks;
-    static map<string, int> user_socks;
-    static pthread_mutex_t mutx;
+    static map<string, int> user_socks; //userid:clnt_sock
+    static pthread_mutex_t mutx;    //lock for clnt_socks
     
 public:
     void openServer(const char* port);

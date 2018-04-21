@@ -41,7 +41,7 @@
         ViewController* VC = segue.destinationViewController;
         VC.userArr = sender[@"users"];
         [VC.userArr insertObject:[@{@"userid":@"", @"name":@"All", @"status":@""} mutableCopy] atIndex:0];
-        VC.chatArr = sender[@"chats"];  //timestamp변경
+        VC.chatArr = sender[@"chats"];
         for (NSDictionary* user in sender[@"users"]) {
             if ([sender[@"userid"] isEqualToString:user[@"userid"]]) {
                 VC.user = [user mutableCopy];
@@ -49,6 +49,7 @@
             }
         }
         
+        //AddingTimeInterval
         //ServerTime    20180422004422
         //DBTime        2018-04-21 06:41:53
         NSDateFormatter *DBDF = [[NSDateFormatter alloc] init];

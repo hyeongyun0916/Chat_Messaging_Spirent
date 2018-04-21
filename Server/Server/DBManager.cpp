@@ -7,6 +7,9 @@
 //
 
 #include "DBManager.hpp"
+//executeQuery when select
+//executeUpdate when insert, update, delete
+
 
 DBManager::DBManager() {
     driver = get_driver_instance();
@@ -50,7 +53,6 @@ bool DBManager::removeUser(string userid, string userpw) {
 }
 
 bool DBManager::changeOnlineifOffline(string userid) {
-//    ResultSet* res2;
     res = stmt->executeQuery("select id, status from `User` where id='"+userid+"';");
     res->next();
     if (res->getString("status") == "offline") {

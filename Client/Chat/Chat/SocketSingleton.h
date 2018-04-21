@@ -10,6 +10,7 @@
 #import "GCDAsyncSocket.h"
 
 @protocol SockDelegate;
+//wrapper GCDAsyncSocket
 @interface SocketSingleton : NSObject <GCDAsyncSocketDelegate>
 
 + (instancetype)getInstance;

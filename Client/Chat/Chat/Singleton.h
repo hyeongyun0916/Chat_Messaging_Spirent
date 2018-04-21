@@ -15,6 +15,6 @@
 - (void)calculateInterval:(NSString *)serverTime;
 
 @property (nonatomic) BOOL isKeyboard;
-@property (nonatomic) NSTimeInterval interval;
+@property (nonatomic) NSTimeInterval interval;  //store interval between server and client
 
 @end

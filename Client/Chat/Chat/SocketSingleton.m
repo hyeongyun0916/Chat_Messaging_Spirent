@@ -56,15 +56,9 @@
     NSString* kJsonStr = [[NSString alloc] initWithData:kData encoding:NSUTF8StringEncoding];
     NSData *requestData = [kJsonStr dataUsingEncoding:NSUTF8StringEncoding];
     [clientSocket writeData:requestData withTimeout:-1 tag:0];
-//    [clientSocket readDataToData:GCDAsyncSocket.LFData withTimeout:-1 tag:0];
 }
 
 #pragma SocketDelegate
-
-//- (dispatch_queue_t)newSocketQueueForConnectionFromAddress:(NSData *)address onSocket:(GCDAsyncSocket *)sock {
-//    DLog(@"");
-//    return dispatch_get_main_queue();
-//}
 
 - (void)socket:(GCDAsyncSocket *)sock didAcceptNewSocket:(GCDAsyncSocket *)newSocket {
     DLog(@"");
@@ -72,8 +66,6 @@
 
 - (void)socket:(GCDAsyncSocket *)sock didConnectToHost:(NSString *)host port:(uint16_t)port {
     DLog(@"");
-//    [_delegate didConnected];
-//    [stateLabel setText:@"isConnected? YES"];
     [clientSocket readDataToData:GCDAsyncSocket.LFData withTimeout:-1 tag:0];
 }
 
@@ -90,26 +82,6 @@
     DLog(@"%@", dict);
     [_delegate didRead:[dict mutableCopy]];
     [clientSocket readDataToData:GCDAsyncSocket.LFData withTimeout:-1 tag:0];
-//    if (![dict[@"result"] integerValue]) {
-//        [_delegate didRead:dict];
-//    } else {
-//        UIViewController *vc = [((AppDelegate*)[UIApplication sharedApplication].delegate).window.rootViewController my_visibleViewController];
-//        UIAlertController *alertcon = [UIAlertController
-//                                       alertControllerWithTitle:@"Error"
-//                                       message:dict[@"msg"] preferredStyle:UIAlertControllerStyleAlert];
-//
-//
-//        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil];
-//        [alertcon addAction:cancelAction];
-//
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            [vc presentViewController:alertcon animated:YES completion:nil];
-//        });
-//    }
-    
-//    [_delegate didReadString:str];
-//    [chatArr addObject:str];
-//    [chatTable reloadData];
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didReadPartialDataOfLength:(NSUInteger)partialLength tag:(long)tag {
@@ -124,14 +96,6 @@
     DLog(@"");
 }
 
-//- (NSTimeInterval)socket:(GCDAsyncSocket *)sock shouldTimeoutReadWithTag:(long)tag elapsed:(NSTimeInterval)elapsed bytesDone:(NSUInteger)length {
-//
-//}
-
-//- (NSTimeInterval)socket:(GCDAsyncSocket *)sock shouldTimeoutWriteWithTag:(long)tag elapsed:(NSTimeInterval)elapsed bytesDone:(NSUInteger)length {
-//
-//}
-
 - (void)socketDidCloseReadStream:(GCDAsyncSocket *)sock {
     DLog(@"");
 }
@@ -139,7 +103,6 @@
 - (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err {
     DLog(@"%@", err);
     [Singleton.getInstance toast:@"check ip port server please"];
-//    [stateLabel setText:@"isConnected? NO"];
 }
 
 - (void)socketDidSecure:(GCDAsyncSocket *)sock {

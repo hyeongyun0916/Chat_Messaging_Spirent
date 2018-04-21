@@ -13,6 +13,7 @@
 
 #define BUFSIZE 1024
 
+//initialize for static thread function
 vector<int> Server::clnt_socks = vector<int>();
 DBManager* Server::dbManager = new DBManager();
 map<string, int> Server::user_socks = map<string, int>();
@@ -21,8 +22,10 @@ pthread_mutex_t Server::mutx;
 
 void Server::openServer(const char* port) {
     cout << "start" << endl;
+    //lock init
     if(pthread_mutex_init(&mutx,NULL))
         error_handling("mutex init error");
+    //set socket
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
     if(serv_sock == -1)
         error_handling("socket() error");
@@ -30,21 +33,26 @@ void Server::openServer(const char* port) {
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(atoi(port));
-    dbManager->getAllUser();
+    
+    //bind -> listen -> accept
     if(::bind(serv_sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1)
         error_handling("bind() error");
     if(listen(serv_sock, 5) == -1)
         error_handling("listen() error");
     while(1) {
+        //make pthread_t for client
         pthread_t thread;
         clnt_addr_size = sizeof(clnt_addr);
         int clnt_sock;
         clnt_sock = accept(serv_sock, (struct sockaddr *)&clnt_addr, &clnt_addr_size);
+        //lock
         pthread_mutex_lock(&mutx);
         clnt_socks.push_back(clnt_sock);
         pthread_mutex_unlock(&mutx);
+        //make threadFunction
         pthread_create(&thread, NULL, &Server::clnt_connection_wrapper, (void*)(size_t)clnt_sock);
         printf(" IP : %s \n", inet_ntoa(clnt_addr.sin_addr));
+        
 //        int result;
 //        pthread_join(thread, (void **)&result);
 //        cout << "result: " << result << endl;
@@ -56,6 +64,7 @@ void *Server::clnt_connection(void *arg) {
     int str_len=0;
     char message[BUFSIZE];
     
+    //get time for calculate interval between Server and Client
     time_t t = time(0);   // get time now
     tm* now = localtime(&t);
     stringstream ss;
@@ -74,20 +83,21 @@ void *Server::clnt_connection(void *arg) {
         CharReaderBuilder rBuiilder;
         CharReader *reader = rBuiilder.newCharReader();
         string errors;
+        //message to json
         if (reader->parse(message, message+str_len, &val, &errors)) {
             /*
              cmd type
              isexist
-             signin
              singup
-             signout
-             status
-             removeuser
+             signin
              msg
+             status
+             signout
+             removeuser
              */
-//            cout << val["cmd"].asString() << endl;
             if (val["cmd"]) {
                 if (val["cmd"] == "isexist") {
+                    //exist id so can't join member
                     //해당 아이디가 존재함 -> 가입불가
                     if (dbManager->isExistUser(val["content"]["userid"].asString())) {
                         Value result;
@@ -96,6 +106,7 @@ void *Server::clnt_connection(void *arg) {
                         result["msg"] = "Alreadyexist";
                         send_message(result, clnt_sock);
                     }
+                    //no exist id so can join member
                     //해당 아이디가 존재하지 않음 -> 가입가능
                     else {
                         Value result;
@@ -125,11 +136,10 @@ void *Server::clnt_connection(void *arg) {
                     }
                 }
                 else if (val["cmd"] == "signin") {
-                    //userid가 없을때 예외처리 필요
                     string userid = val["content"]["userid"].asString();
                     //Duplicate Signin Check 중복로그인체크
                     if (user_socks.find(userid) == user_socks.end()) {
-                        //isMember 가입된유저인지 체크
+                        //is Member 가입된유저인지 체크
                         if (dbManager->isUser(userid, val["content"]["userpw"].asString())) {
                             if (dbManager->changeOnlineifOffline(userid)) {
                                 Value result;
@@ -144,6 +154,7 @@ void *Server::clnt_connection(void *arg) {
                                 result["content"] = content;
                                 user_socks.insert({userid, clnt_sock});
                                 
+                                //notify to other that one's status changed
                                 //다른사람들에게 현 사람의 status가 바뀌었음을 알림.
                                 Value forOthers;
                                 forOthers["cmd"] = "userchanged";
@@ -155,6 +166,7 @@ void *Server::clnt_connection(void *arg) {
                                 send_message(result, clnt_sock);
                             }
                             else {
+                                //fail query
                                 Value result;
                                 result["cmd"] = val["cmd"];
                                 result["result"] = static_cast<int>(StatusCode::CouldntFindReason);
@@ -163,13 +175,16 @@ void *Server::clnt_connection(void *arg) {
                             }
                         }
                         else {
+                            //not member
                             Value result;
                             result["cmd"] = val["cmd"];
                             result["result"] = static_cast<int>(StatusCode::NoDataFound);
                             result["msg"] = "You are Not Member";
                             send_message(result, clnt_sock);
                         }
-                    } else {
+                    }
+                    //Already SignIn
+                    else {
                         Value result;
                         result["cmd"] = val["cmd"];
                         result["result"] = static_cast<int>(StatusCode::AlreadyExists);
@@ -177,6 +192,7 @@ void *Server::clnt_connection(void *arg) {
                         send_message(result, clnt_sock);
                     }
                 }
+                //notify message
                 else if (val["cmd"] == "msg") {
                     dbManager->addChat(val["content"]["from"].asString(), val["content"]["to"].asString(), val["content"]["msg"].asString());
                     Value result;
@@ -184,6 +200,7 @@ void *Server::clnt_connection(void *arg) {
                     result["result"] = static_cast<int>(StatusCode::Sucess);
                     result["msg"] = "success";
                     result["content"] = val["content"];
+                    //if content has to then it is whisper
                     if (val["content"]["to"] == "") {
                         send_message(result, 0);
                     }
@@ -196,6 +213,7 @@ void *Server::clnt_connection(void *arg) {
                     }
                     
                 }
+                //change status
                 else if (val["cmd"] == "status") {
                     if (dbManager->updateUserStatus(val["content"]["userid"].asString(), val["content"]["status"].asString())) {
                         Value result;
@@ -216,6 +234,7 @@ void *Server::clnt_connection(void *arg) {
                         send_message(result, 0);
                     }
                 }
+                //change name
                 else if (val["cmd"] == "name") {
                     if (dbManager->updateUserName(val["content"]["userid"].asString(), val["content"]["name"].asString())) {
                         Value result;
@@ -243,6 +262,7 @@ void *Server::clnt_connection(void *arg) {
                     string status = val["content"]["status"] == "busy" ? "busy" : "offline";
                     dbManager->updateUserStatus(val["content"]["userid"].asString(), status);
                     pthread_mutex_lock(&mutx);
+                    //remove from user_socks
                     //user_socks에서 지워주기
                     for (map<string,int>::iterator it = user_socks.begin(); it != user_socks.end(); it++) {
                         if (it->second == clnt_sock) {
@@ -253,6 +273,7 @@ void *Server::clnt_connection(void *arg) {
                     pthread_mutex_unlock(&mutx);
                     send_message(result, clnt_sock);
                     
+                    //notify that one's status changed
                     //다른사람들에게 현 사람의 status가 바뀌었음을 알림.
                     Value forOthers;
                     forOthers["cmd"] = "userchanged";
@@ -262,6 +283,7 @@ void *Server::clnt_connection(void *arg) {
                     send_message(forOthers, clnt_sock*-1);
 
                 }
+                //remove member
                 else if (val["cmd"] == "removeuser") {
                     if (dbManager->removeUser(val["content"]["userid"].asString(), val["content"]["userpw"].asString())) {
                         Value result;
@@ -278,6 +300,7 @@ void *Server::clnt_connection(void *arg) {
                         send_message(result, clnt_sock);
                     }
                 }
+                //exception
                 else {
                     Value result;
                     result["cmd"] = val["cmd"];
@@ -285,7 +308,9 @@ void *Server::clnt_connection(void *arg) {
                     result["msg"] = "InvalidCmd";
                     send_message(result, clnt_sock);
                 }
-            } else {
+            }
+            //exception
+            else {
                 Value result;
                 result["cmd"] = "cmd";
                 result["result"] = static_cast<int>(StatusCode::InvalidPram);
@@ -294,11 +319,13 @@ void *Server::clnt_connection(void *arg) {
             }
         }
     }
+    //remove from user_socks when user out(not signout ex. exit app)
     //유저가 나갔을때
     //user_socks에서 지워주기 (signout을 하고 나가지 않은 경우)
     for (map<string,int>::iterator it = user_socks.begin(); it != user_socks.end(); it++) {
         if (it->second == clnt_sock) {
             if (dbManager->changeOfflineifOnline(it->first)) {
+                //notify that one's status changed
                 //다른사람들에게 현 사람의 status가 바뀌었음을 알림.
                 Value forOthers;
                 forOthers["cmd"] = "userchanged";
@@ -308,12 +335,12 @@ void *Server::clnt_connection(void *arg) {
                 send_message(forOthers, clnt_sock*-1);
             }
             user_socks.erase(it);
-            //비정상종료시
             break;
         }
     }
-    pthread_mutex_lock(&mutx);
+    //remove from clnt_socks
     //clnt_socks에서 지워주기
+    pthread_mutex_lock(&mutx);
     for(vector<int>::iterator it = clnt_socks.begin();  it != clnt_socks.end(); it++) {
         if (*it == clnt_sock) {
             clnt_socks.erase(it);
@@ -336,14 +363,13 @@ void Server::send_message(Value val, int sock) {
     int len = (int)str.length();
     char *message = new char[len + 1];
     strcpy(message, str.c_str());
+    //if sock is 0 notify to all, if negative notify except that person, if positive send only that person
     //0이면 전체에게, 0미만이면 해당사람빼고 모두, 0이상이면 그사람에게만
     if (sock == 0) {
         pthread_mutex_lock(&mutx);
         for (int i = 0; i < clnt_socks.size(); i++) {
             write(clnt_socks[i], message, len);
         }
-//        for(vector<int>::iterator it = clnt_socks.begin();  it != clnt_socks.end(); it++)
-//            write(*it, message, len);
         pthread_mutex_unlock(&mutx);
     } else if (sock < 0) {
         pthread_mutex_lock(&mutx);
