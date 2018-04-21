@@ -1,0 +1,24 @@
+/* DB Name : Chat - platform server v0.0.1 */
+
+CREATE database `Chat` DEFAULT CHARACTER SET utf8;
+
+use `Chat`;
+
+CREATE TABLE `User` (
+  `id` varchar(30) NOT NULL,
+  `pw` varchar(20) NOT NULL,
+  `name` varchar(100) NOT NULL, 
+  `status` enum('offline', 'online', 'busy') NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=myisam DEFAULT CHARSET=utf8;
+
+CREATE TABLE `Message` (
+  `chatno` int(11) NOT NULL AUTO_INCREMENT,
+  `from` varchar(30) NOT NULL,
+  `to` varchar(30) NOT NULL,
+  `msg` varchar(500) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`chatno`),
+  FOREIGN KEY (`from`) REFERENCES `User` (`id`) 
+  ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=myisam DEFAULT CHARSET=utf8;
