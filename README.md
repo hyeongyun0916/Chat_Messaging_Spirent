@@ -2,7 +2,7 @@
 
 This is Chat Program with TCP.\
 Server written by c++.\
-Client written by Objective-C
+Client written by Objective-C.
 
 ## Run
 
