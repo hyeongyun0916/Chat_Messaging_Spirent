@@ -65,7 +65,9 @@
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    [self.view endEditing:YES];
+    UITouch *touch = [touches anyObject];
+    if (!([touch.view isKindOfClass:[UITextView class]] || [touch.view isKindOfClass:[UITextField class]]))
+        [self.view endEditing:YES];
 }
 
 /*

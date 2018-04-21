@@ -28,6 +28,12 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    UITouch *touch = [touches anyObject];
+    if (!([touch.view isKindOfClass:[UITextView class]] || [touch.view isKindOfClass:[UITextField class]]))
+        [self.view endEditing:YES];
+}
+
 /*
 #pragma mark - Navigation
 

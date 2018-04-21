@@ -35,7 +35,7 @@
 - (void)initSocketSingleton {
     clientSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
     host = @"172.30.1.35";
-    portNumber = 1112;
+    portNumber = 1111;
     
     NSError *error = nil;
     if (![clientSocket connectToHost:host onPort:portNumber error:&error])

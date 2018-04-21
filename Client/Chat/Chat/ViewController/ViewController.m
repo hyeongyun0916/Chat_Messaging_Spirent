@@ -91,7 +91,7 @@
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification {
-    [bottomLayout setConstant:[[notification.userInfo valueForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height];
+    [bottomLayout setConstant:-[[notification.userInfo valueForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height];
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
@@ -174,6 +174,11 @@
 //    [chatArr addObject:str];
 //    [chatTable reloadData];
 //}
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    UITouch *touch = [touches anyObject];
+    if (!([touch.view isKindOfClass:[UITextView class]] || [touch.view isKindOfClass:[UITextField class]]))
+        [self.view endEditing:YES];
+}
 
 #pragma mark TableDelegate
 
@@ -186,6 +191,10 @@
     [(UILabel*)[cell viewWithTag:1] setText:_chatArr[indexPath.row][@"from"]];
     [(UILabel*)[cell viewWithTag:2] setText:_chatArr[indexPath.row][@"msg"]];
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self.view endEditing:YES];
 }
 
 #pragma mark CollecttionDelegate

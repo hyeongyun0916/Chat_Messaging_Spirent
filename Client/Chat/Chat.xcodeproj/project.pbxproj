@@ -201,9 +201,9 @@
 			isa = PBXGroup;
 			children = (
 				333A893E208A7FDE007E8A03 /* SettingViewController.h */,
+				333A893F208A7FDF007E8A03 /* SettingViewController.m */,
 				33D702EE208AB56D00C9A441 /* LeaveMemberViewController.h */,
 				33D702EF208AB56D00C9A441 /* LeaveMemberViewController.m */,
-				333A893F208A7FDF007E8A03 /* SettingViewController.m */,
 				337A0A0C2089AC1400B6B18B /* EntranceViewController.h */,
 				337A0A0D2089AC1400B6B18B /* EntranceViewController.m */,
 				335FA9162089AE6100625333 /* ViewController.h */,
