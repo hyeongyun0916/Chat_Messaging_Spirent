@@ -180,6 +180,15 @@
         [self.view endEditing:YES];
 }
 
+- (NSString *)getName:(NSString *)userID {
+    for (NSDictionary* user in _userArr) {
+        if ([user[@"userid"] isEqualToString:userID]) {
+            return user[@"name"];
+        }
+    }
+    return @"";
+}
+
 #pragma mark TableDelegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -188,7 +197,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"ChatCell"];
-    [(UILabel*)[cell viewWithTag:1] setText:_chatArr[indexPath.row][@"from"]];
+    [(UILabel*)[cell viewWithTag:1] setText:[self getName:_chatArr[indexPath.row][@"from"]]];
     [(UILabel*)[cell viewWithTag:2] setText:_chatArr[indexPath.row][@"msg"]];
     return cell;
 }

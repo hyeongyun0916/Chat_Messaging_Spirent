@@ -48,7 +48,6 @@
     NSString* kJsonStr = [[NSString alloc] initWithData:kData encoding:NSUTF8StringEncoding];
     NSData *requestData = [kJsonStr dataUsingEncoding:NSUTF8StringEncoding];
     [clientSocket writeData:requestData withTimeout:-1 tag:0];
-    [clientSocket readDataToData:GCDAsyncSocket.CRLFData withTimeout:-1 tag:0];
 }
 
 - (void)sendCmd:(NSString *)cmd Content:(NSDictionary *)content {
@@ -57,7 +56,7 @@
     NSString* kJsonStr = [[NSString alloc] initWithData:kData encoding:NSUTF8StringEncoding];
     NSData *requestData = [kJsonStr dataUsingEncoding:NSUTF8StringEncoding];
     [clientSocket writeData:requestData withTimeout:-1 tag:0];
-    [clientSocket readDataToData:GCDAsyncSocket.LFData withTimeout:-1 tag:0];
+//    [clientSocket readDataToData:GCDAsyncSocket.LFData withTimeout:-1 tag:0];
 }
 
 #pragma SocketDelegate
@@ -75,6 +74,7 @@
     DLog(@"");
 //    [_delegate didConnected];
 //    [stateLabel setText:@"isConnected? YES"];
+    [clientSocket readDataToData:GCDAsyncSocket.LFData withTimeout:-1 tag:0];
 }
 
 - (void)socket:(GCDAsyncSocket *)sock didConnectToUrl:(NSURL *)url {
@@ -89,6 +89,7 @@
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&e];
     DLog(@"%@", dict);
     [_delegate didRead:dict];
+    [clientSocket readDataToData:GCDAsyncSocket.LFData withTimeout:-1 tag:0];
 //    if (![dict[@"result"] integerValue]) {
 //        [_delegate didRead:dict];
 //    } else {

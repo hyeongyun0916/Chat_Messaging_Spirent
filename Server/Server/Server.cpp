@@ -42,9 +42,9 @@ void Server::openServer(const char* port) {
         pthread_mutex_unlock(&mutx);
         pthread_create(&thread, NULL, &Server::clnt_connection_wrapper, (void*)(size_t)clnt_sock);
         printf(" IP : %s \n", inet_ntoa(clnt_addr.sin_addr));
-        int result;
-        pthread_join(thread, (void **)&result);
-        cout << "result: " << result << endl;
+//        int result;
+//        pthread_join(thread, (void **)&result);
+//        cout << "result: " << result << endl;
     }
 }
 
@@ -174,7 +174,17 @@ void *Server::clnt_connection(void *arg) {
 //                    content["to"] = val["content"]["to"];
 //                    content["msg"] = val["content"]["msg"];
 //                    result["content"] = content;
-                    send_message(result, 0);
+                    if (val["content"]["to"] == "") {
+                        send_message(result, 0);
+                    }
+                    else {
+                        if (user_socks.find(val["content"]["to"].asString()) == user_socks.end()) {
+                            cout << "it's whisper but couldn't find" << endl;
+                            send_message(result, 0);
+                        } else
+                            send_message(result, user_socks[val["content"]["to"].asString()]);
+                    }
+                    
                 }
                 else if (val["cmd"] == "status") {
                     if (dbManager->updateUserStatus(val["content"]["userid"].asString(), val["content"]["status"].asString())) {
