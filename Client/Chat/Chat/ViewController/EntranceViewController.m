@@ -48,14 +48,30 @@
                 break;
             }
         }
+        
+        //ServerTime    20180422004422
+        //DBTime        2018-04-21 06:41:53
+        NSDateFormatter *DBDF = [[NSDateFormatter alloc] init];
+        [DBDF setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+        NSDateFormatter *chatDF = [[NSDateFormatter alloc] init];
+        [chatDF setDateFormat:@"a h:mm"];
+        for (NSMutableDictionary *chat in VC.chatArr) {
+            NSDate *date = [DBDF dateFromString:chat[@"timestamp"]];
+            NSDate *resultDate = [date dateByAddingTimeInterval:Singleton.getInstance.interval];
+            NSString *chatTime = [chatDF stringFromDate:resultDate];
+            chat[@"timestamp"] = chatTime;
+        }
     }
     DLog(@"");
 }
 
 #pragma mark SocketDelegate
 
-- (void)didRead:(NSDictionary *)dic {
+- (void)didRead:(NSMutableDictionary *)dic {
     if ([dic[@"result"] integerValue] == StatusSucess) {
+        if ([dic[@"cmd"] isEqualToString:@"time"]) {
+            [Singleton.getInstance calculateInterval:dic[@"content"]];
+        }
         if ([dic[@"cmd"] isEqualToString:@"signin"]) {
             [self performSegueWithIdentifier:@"entrance" sender:dic[@"content"]];
         }

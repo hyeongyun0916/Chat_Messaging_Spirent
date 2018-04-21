@@ -13,7 +13,7 @@
 #import "EntranceViewController.h"
 #import "SettingViewController.h"
 
-@interface ViewController () <SockDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource> {
+@interface ViewController () <SockDelegate, UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource> {
     NSMutableArray *busyChatArr;
     __weak IBOutlet UITextField *msgTF;
     __weak IBOutlet UITableView *chatTable;
@@ -21,6 +21,7 @@
     __weak IBOutlet UICollectionView *userCV;
     __weak IBOutlet UIButton *toBtn;
     __weak IBOutlet NSLayoutConstraint *bottomLayout;
+    NSDictionary* whisperUser;
 }
 
 @end
@@ -52,19 +53,22 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     
     [userCV setAllowsMultipleSelection:NO];
+    
+    whisperUser = _userArr.firstObject;
+    [toBtn setTitle:whisperUser[@"name"] forState:UIControlStateNormal];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-    NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
-    [userCV selectItemAtIndexPath:indexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
-    [[userCV cellForItemAtIndexPath:indexPath] setSelected:YES];
-    [[userCV cellForItemAtIndexPath:indexPath].contentView setBackgroundColor:UIColor.redColor];
-}
+//- (void)viewDidAppear:(BOOL)animated {
+//    [super viewDidAppear:animated];
+//    NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
+//    [userCV selectItemAtIndexPath:indexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
+//    [[userCV cellForItemAtIndexPath:indexPath] setSelected:YES];
+//    [[userCV cellForItemAtIndexPath:indexPath].contentView setBackgroundColor:UIColor.redColor];
+//}
 
 - (IBAction)sendMessage:(id)sender {
 //    [SocketSingleton.getInstance sendCmd:@"msg" Str:msgTF.text];
-    [SocketSingleton.getInstance sendCmd:@"msg" Content:@{@"from":_user[@"userid"], @"to":_userArr[userCV.indexPathsForSelectedItems.firstObject.item][@"userid"], @"msg":msgTF.text}];
+    [SocketSingleton.getInstance sendCmd:@"msg" Content:@{@"from":_user[@"userid"], @"to":whisperUser[@"userid"], @"msg":msgTF.text}];
     [msgTF setText:@""];
 }
 
@@ -113,17 +117,31 @@
 }
 
 - (IBAction)showUserCV:(id)sender {
+//    for (int i = 0; i < _userArr.count; i++) {
+//        if ([whisperUser[@"userid"] isEqualToString:_userArr[i][@"userid"]]) {
+//            NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0 inSection:0];
+//            [userCV selectItemAtIndexPath:indexPath animated:YES scrollPosition:UICollectionViewScrollPositionNone];
+//            [[userCV cellForItemAtIndexPath:indexPath] setSelected:YES];
+//            [[userCV cellForItemAtIndexPath:indexPath].contentView setBackgroundColor:UIColor.redColor];
+//            break;
+//        }
+//    }
     userCV.hidden ^= 1;
 }
 
 #pragma mark SocketDelegate
 
-- (void)didRead:(NSDictionary *)dic {
+- (void)didRead:(NSMutableDictionary *)dic {
     DLog(@"%@", dic);
     if ([dic[@"result"] integerValue]) {
         [Singleton.getInstance toast:dic[@"msg"]];
     } else {
         if ([dic[@"cmd"] isEqualToString:@"msg"]) {
+            NSDateFormatter *chatDF = [[NSDateFormatter alloc] init];
+            [chatDF setDateFormat:@"a h:mm"];
+            NSString *chatTime = [chatDF stringFromDate:NSDate.date];
+            dic[@"content"][@"timestamp"] = chatTime;
+            
             if ([_user[@"status"] isEqualToString:@"busy"]) {
                 //timeStamp추가
                 [busyChatArr addObject:dic[@"content"]];
@@ -140,13 +158,21 @@
                 if ([_user[@"status"] isEqualToString:@"online"]) {
                     [_chatArr addObjectsFromArray:busyChatArr];
                     busyChatArr = [NSMutableArray new];
-                    [chatTable reloadData];
                 }
             }
             for (NSMutableDictionary *user in _userArr) {
                 if ([user[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
                     user[@"status"] = dic[@"content"][@"status"];
                     break;
+                }
+            }
+            [chatTable reloadData];
+            if ([whisperUser[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
+                if (![dic[@"content"][@"status"] isEqualToString:@"online"]) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        self->whisperUser = self->_userArr.firstObject;
+                        [self->toBtn setTitle:self->whisperUser[@"name"] forState:UIControlStateNormal];
+                    });
                 }
             }
         }
@@ -162,9 +188,22 @@
                 }
             }
         }
-        else if ([dic[@"cmd"] isEqualToString:@"otherusercome"]) {
+        else if ([dic[@"cmd"] isEqualToString:@"userchanged"]) {
             _userArr = dic[@"content"];
             [_userArr insertObject:[@{@"userid":@"", @"name":@"All", @"status":@""} mutableCopy] atIndex:0];
+            BOOL isWhisperExist = NO;
+            for (NSDictionary* user in _userArr) {
+                if ([user[@"userid"] isEqualToString:whisperUser[@"userid"]]
+                    && [user[@"status"] isEqualToString:@"online"]) {
+                    isWhisperExist = YES;
+                }
+            }
+            if (!isWhisperExist) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self->whisperUser = self->_userArr.firstObject;
+                    [self->toBtn setTitle:self->whisperUser[@"name"] forState:UIControlStateNormal];
+                });
+            }
             [userCV reloadData];
         }
     }
@@ -189,6 +228,13 @@
     return @"";
 }
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    if(range.length + range.location > textField.text.length)
+        return NO;
+    NSUInteger newLength = [textField.text length] + [string length] - range.length;
+    return newLength <= 800;
+}
+
 #pragma mark TableDelegate
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -199,6 +245,12 @@
     UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:@"ChatCell"];
     [(UILabel*)[cell viewWithTag:1] setText:[self getName:_chatArr[indexPath.row][@"from"]]];
     [(UILabel*)[cell viewWithTag:2] setText:_chatArr[indexPath.row][@"msg"]];
+    [(UILabel*)[cell viewWithTag:3] setText:_chatArr[indexPath.row][@"timestamp"]];
+    if ([_chatArr[indexPath.row][@"to"] length]) {
+        [cell.contentView setBackgroundColor:UIColor.orangeColor];
+    } else {
+        [cell.contentView setBackgroundColor:UIColor.whiteColor];
+    }
     return cell;
 }
 
@@ -216,10 +268,10 @@
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"user" forIndexPath:indexPath];
     [(UILabel *)[cell viewWithTag:1] setText:_userArr[indexPath.item][@"name"]];
     [(UILabel *)[cell viewWithTag:2] setText:_userArr[indexPath.item][@"status"]];
-    if (cell.isSelected)
-        [cell.contentView setBackgroundColor:UIColor.redColor];
-    else
-        [cell.contentView setBackgroundColor:UIColor.whiteColor];
+//    if (cell.isSelected)
+//        [cell.contentView setBackgroundColor:UIColor.redColor];
+//    else
+//        [cell.contentView setBackgroundColor:UIColor.whiteColor];
     return cell;
 }
 
@@ -228,13 +280,11 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    [collectionView setHidden:YES];
-    [toBtn setTitle:_userArr[userCV.indexPathsForSelectedItems.firstObject.item][@"name"] forState:UIControlStateNormal];
-    [[collectionView cellForItemAtIndexPath:indexPath].contentView setBackgroundColor:UIColor.redColor];
-}
-
-- (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath {
-    [[collectionView cellForItemAtIndexPath:indexPath].contentView setBackgroundColor:UIColor.whiteColor];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [collectionView setHidden:YES];
+        self->whisperUser = self->_userArr[indexPath.row];
+        [self->toBtn setTitle:self->whisperUser[@"name"] forState:UIControlStateNormal];
+    });
 }
 
 @end

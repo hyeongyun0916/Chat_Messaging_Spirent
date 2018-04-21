@@ -12,7 +12,9 @@
 
 + (instancetype)getInstance;
 - (void)toast:(NSString*)str;
+- (void)calculateInterval:(NSString *)serverTime;
 
 @property (nonatomic) BOOL isKeyboard;
+@property (nonatomic) NSTimeInterval interval;
 
 @end

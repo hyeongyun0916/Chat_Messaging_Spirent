@@ -8,7 +8,7 @@
 
 #import "SignUpViewController.h"
 
-@interface SignUpViewController () <SockDelegate> {
+@interface SignUpViewController () <SockDelegate, UITextFieldDelegate> {
     NSString* checkedID;
     __weak IBOutlet UITextField *idTF;
     __weak IBOutlet UITextField *pwTF;
@@ -64,7 +64,15 @@
     }
 }
 
-- (void)didRead:(NSDictionary *)dic {
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    int limit = [textField isEqual:idTF] ? 30 : [textField isEqual:pwTF] ? 20 : [textField isEqual:nameTF] ? 100 : INT_MAX;
+    if(range.length + range.location > textField.text.length)
+        return NO;
+    NSUInteger newLength = [textField.text length] + [string length] - range.length;
+    return newLength <= limit;
+}
+
+- (void)didRead:(NSMutableDictionary *)dic {
     DLog(@"%@", dic);
     if ([dic[@"cmd"] isEqualToString:@"isexist"]) {
         if ([dic[@"result"] integerValue] == StatusNoDataFound) {

@@ -61,14 +61,13 @@ bool DBManager::changeOnlineifOffline(string userid) {
 }
 
 bool DBManager::changeOfflineifOnline(string userid) {
-    //    ResultSet* res2;
     res = stmt->executeQuery("select id, status from `User` where id='"+userid+"';");
     res->next();
     if (res->getString("status") == "online") {
         return updateUserStatus(userid, "offline");
     }
     else
-        return true;
+        return false;
 }
 
 Value DBManager::getAllUser() {

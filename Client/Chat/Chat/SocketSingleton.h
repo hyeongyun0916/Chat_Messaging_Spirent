@@ -22,7 +22,7 @@
 
 @protocol SockDelegate <NSObject>
 
-- (void)didRead:(NSDictionary*)dic;
+- (void)didRead:(NSMutableDictionary*)dic;
 //- (void)didReadString:(NSString *)str;
 
 @optional

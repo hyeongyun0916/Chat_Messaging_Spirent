@@ -34,8 +34,8 @@
 
 - (void)initSocketSingleton {
     clientSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
-    host = @"172.30.1.35";
-    portNumber = 1111;
+    host = @"172.30.1.10";
+    portNumber = 1112;
     
     NSError *error = nil;
     if (![clientSocket connectToHost:host onPort:portNumber error:&error])
@@ -88,7 +88,7 @@
     NSError *e;
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableContainers error:&e];
     DLog(@"%@", dict);
-    [_delegate didRead:dict];
+    [_delegate didRead:[dict mutableCopy]];
     [clientSocket readDataToData:GCDAsyncSocket.LFData withTimeout:-1 tag:0];
 //    if (![dict[@"result"] integerValue]) {
 //        [_delegate didRead:dict];
@@ -138,6 +138,7 @@
 
 - (void)socketDidDisconnect:(GCDAsyncSocket *)sock withError:(NSError *)err {
     DLog(@"%@", err);
+    [Singleton.getInstance toast:@"check ip port server please"];
 //    [stateLabel setText:@"isConnected? NO"];
 }
 

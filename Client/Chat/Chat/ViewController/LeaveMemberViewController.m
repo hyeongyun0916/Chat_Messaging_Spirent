@@ -8,7 +8,10 @@
 
 #import "LeaveMemberViewController.h"
 
-@interface LeaveMemberViewController ()
+@interface LeaveMemberViewController () <SockDelegate> {
+    __weak IBOutlet UITextField *idTF;
+    __weak IBOutlet UITextField *pwTF;
+}
 
 @end
 
@@ -17,6 +20,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    [SocketSingleton.getInstance setDelegate:self];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -25,7 +30,20 @@
 }
 
 - (IBAction)close:(id)sender {
+    [SocketSingleton.getInstance setDelegate:(EntranceViewController *)self.presentingViewController];
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (IBAction)removeUser:(id)sender {
+    [SocketSingleton.getInstance sendCmd:@"removeuser"
+                                 Content:@{@"userid":idTF.text, @"userpw":[pwTF.text AES128Encrypt]}];
+}
+
+- (void)didRead:(NSMutableDictionary *)dic {
+    DLog(@"%@", dic);
+    if ([dic[@"cmd"] isEqualToString:@"removeuser"]) {
+        [Singleton.getInstance toast:dic[@"msg"]];
+    }
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {

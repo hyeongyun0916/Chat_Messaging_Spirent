@@ -32,6 +32,15 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
+- (void)calculateInterval:(NSString *)serverTime {
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    [df setDateFormat:@"yyyyMMddHHmmss"];
+    //ServerTime    20180422004422
+    //DBTime        2018-04-21 06:41:53
+    NSDate *serverDate = [df dateFromString:serverTime];
+    _interval = [NSDate.date timeIntervalSinceDate:serverDate];
+}
+
 - (void)keyboardWillShow:(NSNotification *)notification {
     _isKeyboard = YES;
 }
