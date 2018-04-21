@@ -40,6 +40,7 @@
     if ([segue.destinationViewController isKindOfClass:ViewController.class]) {
         ViewController* VC = segue.destinationViewController;
         VC.userArr = sender[@"users"];
+        [VC.userArr insertObject:[@{@"userid":@"", @"name":@"All", @"status":@""} mutableCopy] atIndex:0];
         VC.chatArr = sender[@"chats"];  //timestamp변경
         for (NSDictionary* user in sender[@"users"]) {
             if ([sender[@"userid"] isEqualToString:user[@"userid"]]) {
@@ -61,6 +62,10 @@
     } else {
         [Singleton.getInstance toast:dic[@"msg"]];
     }
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    [self.view endEditing:YES];
 }
 
 /*

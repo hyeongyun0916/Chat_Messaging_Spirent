@@ -23,6 +23,7 @@
 		335FA9192089AEAA00625333 /* SocketSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 335FA9182089AEAA00625333 /* SocketSingleton.m */; };
 		337A0A0E2089AC1400B6B18B /* EntranceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 337A0A0D2089AC1400B6B18B /* EntranceViewController.m */; };
 		3396FB192087CBCE00FD160C /* UtilForDebug.m in Sources */ = {isa = PBXBuildFile; fileRef = 3396FB172087CBCE00FD160C /* UtilForDebug.m */; };
+		33D702F0208AB56D00C9A441 /* LeaveMemberViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 33D702EF208AB56D00C9A441 /* LeaveMemberViewController.m */; };
 		3BA21E8C3B78835F11A62ECC /* Pods_ChatTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85C952144061F5ACDCE4F030 /* Pods_ChatTests.framework */; };
 		AA55A3631E7774594B4BAE01 /* Pods_ChatUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE792293F28EACFFDEF59574 /* Pods_ChatUITests.framework */; };
 		ED1AD4124E0CEA4A468996E3 /* Pods_Chat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A7CC00902ABDCDA11D40FEB /* Pods_Chat.framework */; };
@@ -84,6 +85,8 @@
 		3396FB182087CBCE00FD160C /* UtilForDebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UtilForDebug.h; sourceTree = "<group>"; };
 		33D702EB208AA8C000C9A441 /* SideViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SideViewController.m; sourceTree = "<group>"; };
 		33D702EC208AA8C000C9A441 /* SideViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideViewController.h; sourceTree = "<group>"; };
+		33D702EE208AB56D00C9A441 /* LeaveMemberViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LeaveMemberViewController.h; sourceTree = "<group>"; };
+		33D702EF208AB56D00C9A441 /* LeaveMemberViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LeaveMemberViewController.m; sourceTree = "<group>"; };
 		365AFD3FC6D255250F5061D5 /* Pods-Chat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Chat.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Chat/Pods-Chat.debug.xcconfig"; sourceTree = "<group>"; };
 		3A7CC00902ABDCDA11D40FEB /* Pods_Chat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Chat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5502C6A53F0BB3D0584F8EBE /* Pods-ChatUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ChatUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ChatUITests/Pods-ChatUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -198,6 +201,8 @@
 			isa = PBXGroup;
 			children = (
 				333A893E208A7FDE007E8A03 /* SettingViewController.h */,
+				33D702EE208AB56D00C9A441 /* LeaveMemberViewController.h */,
+				33D702EF208AB56D00C9A441 /* LeaveMemberViewController.m */,
 				333A893F208A7FDF007E8A03 /* SettingViewController.m */,
 				337A0A0C2089AC1400B6B18B /* EntranceViewController.h */,
 				337A0A0D2089AC1400B6B18B /* EntranceViewController.m */,
@@ -452,6 +457,7 @@
 			files = (
 				3323DFAE20874BAA004FF07E /* ViewController.m in Sources */,
 				3396FB192087CBCE00FD160C /* UtilForDebug.m in Sources */,
+				33D702F0208AB56D00C9A441 /* LeaveMemberViewController.m in Sources */,
 				332FAFC8208A437F00F454C0 /* UIViewController+Spirent.m in Sources */,
 				335FA9192089AEAA00625333 /* SocketSingleton.m in Sources */,
 				3323DFB920874BAE004FF07E /* main.m in Sources */,
