@@ -19,5 +19,6 @@
 //#import "UIViewController+Spirent.h"
 #import "SocketSingleton.h"
 #import "EntranceViewController.h"
+#import "NSString+Spiretn.h"
 
 #endif /* PrefixHeader_pch */

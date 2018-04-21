@@ -20,6 +20,7 @@
 		332FAFDA208A50AF00F454C0 /* Singleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 332FAFD9208A50AF00F454C0 /* Singleton.m */; };
 		333A893D208A7E65007E8A03 /* SideViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 333A893B208A7E64007E8A03 /* SideViewController.m */; };
 		333A8940208A7FDF007E8A03 /* SettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 333A893F208A7FDF007E8A03 /* SettingViewController.m */; };
+		33593D0E208B2118000003BE /* NSString+Spiretn.m in Sources */ = {isa = PBXBuildFile; fileRef = 33593D0D208B2118000003BE /* NSString+Spiretn.m */; };
 		335FA9192089AEAA00625333 /* SocketSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 335FA9182089AEAA00625333 /* SocketSingleton.m */; };
 		337A0A0E2089AC1400B6B18B /* EntranceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 337A0A0D2089AC1400B6B18B /* EntranceViewController.m */; };
 		3396FB192087CBCE00FD160C /* UtilForDebug.m in Sources */ = {isa = PBXBuildFile; fileRef = 3396FB172087CBCE00FD160C /* UtilForDebug.m */; };
@@ -75,6 +76,8 @@
 		333A893C208A7E65007E8A03 /* SideViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideViewController.h; sourceTree = "<group>"; };
 		333A893E208A7FDE007E8A03 /* SettingViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingViewController.h; sourceTree = "<group>"; };
 		333A893F208A7FDF007E8A03 /* SettingViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingViewController.m; sourceTree = "<group>"; };
+		33593D0C208B2118000003BE /* NSString+Spiretn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSString+Spiretn.h"; sourceTree = "<group>"; };
+		33593D0D208B2118000003BE /* NSString+Spiretn.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSString+Spiretn.m"; sourceTree = "<group>"; };
 		335FA9162089AE6100625333 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		335FA9172089AEAA00625333 /* SocketSingleton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SocketSingleton.h; sourceTree = "<group>"; };
 		335FA9182089AEAA00625333 /* SocketSingleton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SocketSingleton.m; sourceTree = "<group>"; };
@@ -226,6 +229,8 @@
 				332FAFC6208A437F00F454C0 /* UIViewController+Spirent.h */,
 				332FAFC7208A437F00F454C0 /* UIViewController+Spirent.m */,
 				332FAFC9208A447B00F454C0 /* DefineString.h */,
+				33593D0C208B2118000003BE /* NSString+Spiretn.h */,
+				33593D0D208B2118000003BE /* NSString+Spiretn.m */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -456,6 +461,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3323DFAE20874BAA004FF07E /* ViewController.m in Sources */,
+				33593D0E208B2118000003BE /* NSString+Spiretn.m in Sources */,
 				3396FB192087CBCE00FD160C /* UtilForDebug.m in Sources */,
 				33D702F0208AB56D00C9A441 /* LeaveMemberViewController.m in Sources */,
 				332FAFC8208A437F00F454C0 /* UIViewController+Spirent.m in Sources */,

@@ -39,25 +39,25 @@
 }
 
 - (IBAction)checkExist:(id)sender {
-    if (idTF.text.length) {
+    if ([idTF.text IsValidEmail]) {
         [SocketSingleton.getInstance sendCmd:@"isexist" Content:@{@"userid":idTF.text}];
     }
     else {
-        [Singleton.getInstance toast:@"input ID please"];
+        [Singleton.getInstance toast:@"id must email"];
     }
 }
 
 - (IBAction)signup:(id)sender {
     if (checkedID.length) {
-        if (pwTF.text.length) {
+        if ([pwTF.text isValidPassword]) {
             if ([pwTF.text isEqualToString:pw2TF.text]) {
                 [SocketSingleton.getInstance sendCmd:@"signup"
-                                             Content:@{@"userid":checkedID, @"userpw":pwTF.text, @"name":nameTF.text}];
+                                             Content:@{@"userid":checkedID, @"userpw":[pwTF.text AES128Encrypt], @"name":nameTF.text}];
             } else {
                 [Singleton.getInstance toast:@"passwords are not same"];
             }
         } else {
-            [Singleton.getInstance toast:@"input password please"];
+            [Singleton.getInstance toast:@"password must include number, LargeCase, SmallCase, SpecialCharacters more than 10 character"];
         }
     } else {
         [Singleton.getInstance toast:@"check ID please"];

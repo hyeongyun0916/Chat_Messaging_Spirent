@@ -33,7 +33,7 @@
 }
 
 - (IBAction)signIn:(id)sender {
-    [SocketSingleton.getInstance sendCmd:@"signin" Content:@{@"userid":idTF.text,@"userpw":pwTF.text}];
+    [SocketSingleton.getInstance sendCmd:@"signin" Content:@{@"userid":idTF.text,@"userpw":[pwTF.text AES128Encrypt]}];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(NSDictionary *)sender {
