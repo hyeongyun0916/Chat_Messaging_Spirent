@@ -27,6 +27,14 @@
 using namespace Json;
 using namespace std;
 
+
+/**
+ * @brief Enum for send result to client
+ * @author hyunkyun
+ * @date 2018-04-23
+ * @version 0.0.1
+ */
+
 enum class StatusCode {
     Sucess = 0,
     InvalidCmd = -100,
@@ -35,6 +43,14 @@ enum class StatusCode {
     AlreadyExists = 200,
     CouldntFindReason = 999
 };
+
+/**
+ * @brief Class for TCP socket
+ * @author hyunkyun
+ * @date 2018-04-23
+ * @version 0.0.1
+ */
+
 
 class Server {
 private:
@@ -46,9 +62,9 @@ private:
     
     //static for thread
     static DBManager* dbManager;
-    static vector<int> clnt_socks;
-    static map<string, int> user_socks; //userid:clnt_sock
-    static pthread_mutex_t mutx;    //lock for clnt_socks
+    static vector<int> clnt_socks; ///client sockets
+    static map<string, int> user_socks; ///<userid:clnt_sock
+    static pthread_mutex_t mutx;    ///lock for clnt_socks
     
 public:
     void openServer(const char* port);

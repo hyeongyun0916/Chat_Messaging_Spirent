@@ -1,0 +1,266 @@
+\hypertarget{class_d_b_manager}{}\section{D\+B\+Manager Class Reference}
+\label{class_d_b_manager}\index{D\+B\+Manager@{D\+B\+Manager}}
+
+
+Class for query DB.  
+
+
+
+
+{\ttfamily \#include $<$D\+B\+Manager.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_d_b_manager_afb4f09d26522754aab71b801716a8325}\label{class_d_b_manager_afb4f09d26522754aab71b801716a8325}} 
+\mbox{\hyperlink{class_d_b_manager_afb4f09d26522754aab71b801716a8325}{D\+B\+Manager}} ()
+\begin{DoxyCompactList}\small\item\em constructor setting connection \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_d_b_manager_a7ad381fbe40d8947790984f40e05a59a}{add\+User}} (string userid, string userpw, string name)
+\begin{DoxyCompactList}\small\item\em add user to database. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_d_b_manager_ae4df9e089ce729370abd432af32ab0a5}{is\+Exist\+User}} (string userid)
+\begin{DoxyCompactList}\small\item\em Check wehether the user is in the database. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_d_b_manager_a3fb201b447281395526cc71e8c408051}{is\+User}} (string userid, string userpw)
+\begin{DoxyCompactList}\small\item\em Check whether user information (ID, password) is correct. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_d_b_manager_aa2a2c53b87cc1200416f6e825e524410}{update\+User\+Status}} (string userid, string status)
+\begin{DoxyCompactList}\small\item\em update user\textquotesingle{}s status \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_d_b_manager_a5778a4df0fe537979dc09a1265a4abee}{update\+User\+Name}} (string userid, string name)
+\begin{DoxyCompactList}\small\item\em update user\textquotesingle{}s name \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_d_b_manager_a0af0724f0b21b7e33062b93bd700ded6}{remove\+User}} (string userid, string userpw)
+\begin{DoxyCompactList}\small\item\em remove user from database \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_d_b_manager_a51bb4bba0e60fecca52f93c93063fa90}{change\+Onlineif\+Offline}} (string userid)
+\begin{DoxyCompactList}\small\item\em change user\textquotesingle{}s status to online if user\textquotesingle{}s status is offline \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_d_b_manager_a7e404783a429de457f15b354bc40eb57}{change\+Offlineif\+Online}} (string userid)
+\begin{DoxyCompactList}\small\item\em change user\textquotesingle{}s status to offline if user\textquotesingle{}s status is online \end{DoxyCompactList}\item 
+Value \mbox{\hyperlink{class_d_b_manager_a0171d3489ef375c9eeff4014a4a485de}{get\+All\+User}} ()
+\begin{DoxyCompactList}\small\item\em get all user from database \end{DoxyCompactList}\item 
+Value \mbox{\hyperlink{class_d_b_manager_a546cf5b82fe9cb115cfee8d52f90f0da}{get\+All\+Chat}} ()
+\begin{DoxyCompactList}\small\item\em get all chat from database \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{class_d_b_manager_a3631eb2172602412ceeb8f9608406aec}{add\+Chat}} (string from, string to, string msg)
+\begin{DoxyCompactList}\small\item\em add chat to database \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class for query DB. 
+
+\begin{DoxyAuthor}{Author}
+hyunkyun 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2018-\/04-\/23 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+0.\+0.\+1 
+\end{DoxyVersion}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_d_b_manager_a3631eb2172602412ceeb8f9608406aec}\label{class_d_b_manager_a3631eb2172602412ceeb8f9608406aec}} 
+\index{D\+B\+Manager@{D\+B\+Manager}!add\+Chat@{add\+Chat}}
+\index{add\+Chat@{add\+Chat}!D\+B\+Manager@{D\+B\+Manager}}
+\subsubsection{\texorpdfstring{add\+Chat()}{addChat()}}
+{\footnotesize\ttfamily bool D\+B\+Manager\+::add\+Chat (\begin{DoxyParamCaption}\item[{string}]{from,  }\item[{string}]{to,  }\item[{string}]{msg }\end{DoxyParamCaption})}
+
+
+
+add chat to database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em from} & a string The user ID of the person who sent the chat. \\
+\hline
+{\em to} & a string The user ID of the person who receive the chat. An empty string if chat is sent to everyone. \\
+\hline
+{\em msg} & a string The content of the chat \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool Return true if chat is added. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_d_b_manager_a7ad381fbe40d8947790984f40e05a59a}\label{class_d_b_manager_a7ad381fbe40d8947790984f40e05a59a}} 
+\index{D\+B\+Manager@{D\+B\+Manager}!add\+User@{add\+User}}
+\index{add\+User@{add\+User}!D\+B\+Manager@{D\+B\+Manager}}
+\subsubsection{\texorpdfstring{add\+User()}{addUser()}}
+{\footnotesize\ttfamily bool D\+B\+Manager\+::add\+User (\begin{DoxyParamCaption}\item[{string}]{userid,  }\item[{string}]{userpw,  }\item[{string}]{name }\end{DoxyParamCaption})}
+
+
+
+add user to database. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em userid} & a string \\
+\hline
+{\em userpw} & a string \\
+\hline
+{\em name} & a string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool Returns true if the user has been added. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_d_b_manager_a7e404783a429de457f15b354bc40eb57}\label{class_d_b_manager_a7e404783a429de457f15b354bc40eb57}} 
+\index{D\+B\+Manager@{D\+B\+Manager}!change\+Offlineif\+Online@{change\+Offlineif\+Online}}
+\index{change\+Offlineif\+Online@{change\+Offlineif\+Online}!D\+B\+Manager@{D\+B\+Manager}}
+\subsubsection{\texorpdfstring{change\+Offlineif\+Online()}{changeOfflineifOnline()}}
+{\footnotesize\ttfamily bool D\+B\+Manager\+::change\+Offlineif\+Online (\begin{DoxyParamCaption}\item[{string}]{userid }\end{DoxyParamCaption})}
+
+
+
+change user\textquotesingle{}s status to offline if user\textquotesingle{}s status is online 
+
+
+\begin{DoxyParams}{Parameters}
+{\em userid} & a string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool Returns true if the status change succeeds. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_d_b_manager_a51bb4bba0e60fecca52f93c93063fa90}\label{class_d_b_manager_a51bb4bba0e60fecca52f93c93063fa90}} 
+\index{D\+B\+Manager@{D\+B\+Manager}!change\+Onlineif\+Offline@{change\+Onlineif\+Offline}}
+\index{change\+Onlineif\+Offline@{change\+Onlineif\+Offline}!D\+B\+Manager@{D\+B\+Manager}}
+\subsubsection{\texorpdfstring{change\+Onlineif\+Offline()}{changeOnlineifOffline()}}
+{\footnotesize\ttfamily bool D\+B\+Manager\+::change\+Onlineif\+Offline (\begin{DoxyParamCaption}\item[{string}]{userid }\end{DoxyParamCaption})}
+
+
+
+change user\textquotesingle{}s status to online if user\textquotesingle{}s status is offline 
+
+
+\begin{DoxyParams}{Parameters}
+{\em userid} & a string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool Returns true if the user is not offline or the status change succeeds. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_d_b_manager_a546cf5b82fe9cb115cfee8d52f90f0da}\label{class_d_b_manager_a546cf5b82fe9cb115cfee8d52f90f0da}} 
+\index{D\+B\+Manager@{D\+B\+Manager}!get\+All\+Chat@{get\+All\+Chat}}
+\index{get\+All\+Chat@{get\+All\+Chat}!D\+B\+Manager@{D\+B\+Manager}}
+\subsubsection{\texorpdfstring{get\+All\+Chat()}{getAllChat()}}
+{\footnotesize\ttfamily Value D\+B\+Manager\+::get\+All\+Chat (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+get all chat from database 
+
+\begin{DoxyReturn}{Returns}
+Value Returns chat json array 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_d_b_manager_a0171d3489ef375c9eeff4014a4a485de}\label{class_d_b_manager_a0171d3489ef375c9eeff4014a4a485de}} 
+\index{D\+B\+Manager@{D\+B\+Manager}!get\+All\+User@{get\+All\+User}}
+\index{get\+All\+User@{get\+All\+User}!D\+B\+Manager@{D\+B\+Manager}}
+\subsubsection{\texorpdfstring{get\+All\+User()}{getAllUser()}}
+{\footnotesize\ttfamily Value D\+B\+Manager\+::get\+All\+User (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+get all user from database 
+
+\begin{DoxyReturn}{Returns}
+Value Returns user json array 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_d_b_manager_ae4df9e089ce729370abd432af32ab0a5}\label{class_d_b_manager_ae4df9e089ce729370abd432af32ab0a5}} 
+\index{D\+B\+Manager@{D\+B\+Manager}!is\+Exist\+User@{is\+Exist\+User}}
+\index{is\+Exist\+User@{is\+Exist\+User}!D\+B\+Manager@{D\+B\+Manager}}
+\subsubsection{\texorpdfstring{is\+Exist\+User()}{isExistUser()}}
+{\footnotesize\ttfamily bool D\+B\+Manager\+::is\+Exist\+User (\begin{DoxyParamCaption}\item[{string}]{userid }\end{DoxyParamCaption})}
+
+
+
+Check wehether the user is in the database. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em userid} & a string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool Returns true if the user is in the database 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_d_b_manager_a3fb201b447281395526cc71e8c408051}\label{class_d_b_manager_a3fb201b447281395526cc71e8c408051}} 
+\index{D\+B\+Manager@{D\+B\+Manager}!is\+User@{is\+User}}
+\index{is\+User@{is\+User}!D\+B\+Manager@{D\+B\+Manager}}
+\subsubsection{\texorpdfstring{is\+User()}{isUser()}}
+{\footnotesize\ttfamily bool D\+B\+Manager\+::is\+User (\begin{DoxyParamCaption}\item[{string}]{userid,  }\item[{string}]{userpw }\end{DoxyParamCaption})}
+
+
+
+Check whether user information (ID, password) is correct. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em userid} & a string \\
+\hline
+{\em userpw} & a string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool Returns true if the user is in the database 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_d_b_manager_a0af0724f0b21b7e33062b93bd700ded6}\label{class_d_b_manager_a0af0724f0b21b7e33062b93bd700ded6}} 
+\index{D\+B\+Manager@{D\+B\+Manager}!remove\+User@{remove\+User}}
+\index{remove\+User@{remove\+User}!D\+B\+Manager@{D\+B\+Manager}}
+\subsubsection{\texorpdfstring{remove\+User()}{removeUser()}}
+{\footnotesize\ttfamily bool D\+B\+Manager\+::remove\+User (\begin{DoxyParamCaption}\item[{string}]{userid,  }\item[{string}]{userpw }\end{DoxyParamCaption})}
+
+
+
+remove user from database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em userid} & a string \\
+\hline
+{\em userpw} & a string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool if Returns true if the deletion succeeds. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_d_b_manager_a5778a4df0fe537979dc09a1265a4abee}\label{class_d_b_manager_a5778a4df0fe537979dc09a1265a4abee}} 
+\index{D\+B\+Manager@{D\+B\+Manager}!update\+User\+Name@{update\+User\+Name}}
+\index{update\+User\+Name@{update\+User\+Name}!D\+B\+Manager@{D\+B\+Manager}}
+\subsubsection{\texorpdfstring{update\+User\+Name()}{updateUserName()}}
+{\footnotesize\ttfamily bool D\+B\+Manager\+::update\+User\+Name (\begin{DoxyParamCaption}\item[{string}]{userid,  }\item[{string}]{name }\end{DoxyParamCaption})}
+
+
+
+update user\textquotesingle{}s name 
+
+
+\begin{DoxyParams}{Parameters}
+{\em userid} & a string \\
+\hline
+{\em name} & a string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool Returns true if the name change succeeds. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_d_b_manager_aa2a2c53b87cc1200416f6e825e524410}\label{class_d_b_manager_aa2a2c53b87cc1200416f6e825e524410}} 
+\index{D\+B\+Manager@{D\+B\+Manager}!update\+User\+Status@{update\+User\+Status}}
+\index{update\+User\+Status@{update\+User\+Status}!D\+B\+Manager@{D\+B\+Manager}}
+\subsubsection{\texorpdfstring{update\+User\+Status()}{updateUserStatus()}}
+{\footnotesize\ttfamily bool D\+B\+Manager\+::update\+User\+Status (\begin{DoxyParamCaption}\item[{string}]{userid,  }\item[{string}]{status }\end{DoxyParamCaption})}
+
+
+
+update user\textquotesingle{}s status 
+
+
+\begin{DoxyParams}{Parameters}
+{\em userid} & a string \\
+\hline
+{\em status} & a string (online, offline, busy) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bool Returns true if the status change succeeds. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/hyeongyunmun/\+Documents/\+Chat/\+Server/\+Server/D\+B\+Manager.\+hpp\item 
+/\+Users/hyeongyunmun/\+Documents/\+Chat/\+Server/\+Server/D\+B\+Manager.\+cpp\end{DoxyCompactItemize}

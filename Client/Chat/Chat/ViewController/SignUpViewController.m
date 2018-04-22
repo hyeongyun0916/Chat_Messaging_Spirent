@@ -64,6 +64,14 @@
     }
 }
 
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    UITouch *touch = [touches anyObject];
+    if (!([touch.view isKindOfClass:[UITextView class]] || [touch.view isKindOfClass:[UITextField class]]))
+        [self.view endEditing:YES];
+}
+
+#pragma mark TextFieldDelegate
+
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     int limit = [textField isEqual:idTF] ? 30 : [textField isEqual:pwTF] ? 20 : [textField isEqual:nameTF] ? 100 : INT_MAX;
     if(range.length + range.location > textField.text.length)
@@ -71,6 +79,8 @@
     NSUInteger newLength = [textField.text length] + [string length] - range.length;
     return newLength <= limit;
 }
+
+#pragma mark SockDelegate
 
 - (void)didRead:(NSMutableDictionary *)dic {
     DLog(@"%@", dic);
@@ -93,11 +103,6 @@
     }
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    UITouch *touch = [touches anyObject];
-    if (!([touch.view isKindOfClass:[UITextView class]] || [touch.view isKindOfClass:[UITextField class]]))
-        [self.view endEditing:YES];
-}
 /*
 #pragma mark - Navigation
 

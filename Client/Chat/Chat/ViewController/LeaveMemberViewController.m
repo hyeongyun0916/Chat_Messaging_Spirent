@@ -39,17 +39,19 @@
                                  Content:@{@"userid":idTF.text, @"userpw":[pwTF.text AES128Encrypt]}];
 }
 
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    UITouch *touch = [touches anyObject];
+    if (!([touch.view isKindOfClass:[UITextView class]] || [touch.view isKindOfClass:[UITextField class]]))
+        [self.view endEditing:YES];
+}
+
+#pragma mark SockDelegate
+
 - (void)didRead:(NSMutableDictionary *)dic {
     DLog(@"%@", dic);
     if ([dic[@"cmd"] isEqualToString:@"removeuser"]) {
         [Singleton.getInstance toast:dic[@"msg"]];
     }
-}
-
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    UITouch *touch = [touches anyObject];
-    if (!([touch.view isKindOfClass:[UITextView class]] || [touch.view isKindOfClass:[UITextField class]]))
-        [self.view endEditing:YES];
 }
 
 /*

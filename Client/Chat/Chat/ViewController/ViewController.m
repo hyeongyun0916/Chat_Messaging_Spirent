@@ -111,6 +111,21 @@
     userCV.hidden ^= 1;
 }
 
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    UITouch *touch = [touches anyObject];
+    if (!([touch.view isKindOfClass:[UITextView class]] || [touch.view isKindOfClass:[UITextField class]]))
+        [self.view endEditing:YES];
+}
+
+- (NSString *)getName:(NSString *)userID {
+    for (NSDictionary* user in _userArr) {
+        if ([user[@"userid"] isEqualToString:userID]) {
+            return user[@"name"];
+        }
+    }
+    return @"";
+}
+
 #pragma mark SocketDelegate
 
 - (void)didRead:(NSMutableDictionary *)dic {
@@ -201,20 +216,7 @@
     }
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    UITouch *touch = [touches anyObject];
-    if (!([touch.view isKindOfClass:[UITextView class]] || [touch.view isKindOfClass:[UITextField class]]))
-        [self.view endEditing:YES];
-}
-
-- (NSString *)getName:(NSString *)userID {
-    for (NSDictionary* user in _userArr) {
-        if ([user[@"userid"] isEqualToString:userID]) {
-            return user[@"name"];
-        }
-    }
-    return @"";
-}
+#pragma mark TextFieldDelegate
 
 //limit chat msg
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {

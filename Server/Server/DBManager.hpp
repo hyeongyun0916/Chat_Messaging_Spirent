@@ -30,6 +30,13 @@ enum class UserStatus {
     busy = 3
 };
 
+/**
+ * @brief Class for query DB
+ * @author hyunkyun
+ * @date 2018-04-23
+ * @version 0.0.1
+ */
+
 class DBManager {
 private:
     Driver *driver;

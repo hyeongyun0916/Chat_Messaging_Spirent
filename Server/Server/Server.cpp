@@ -20,6 +20,10 @@ map<string, int> Server::user_socks = map<string, int>();
 pthread_mutex_t Server::mutx;
 
 
+/**
+ * @brief setting server
+ * @param port a constant character pointer.
+ */
 void Server::openServer(const char* port) {
     cout << "start" << endl;
     //lock init
@@ -59,6 +63,12 @@ void Server::openServer(const char* port) {
     }
 }
 
+/**
+ * @brief thread Function for client.
+ * read message from client.
+ * It sends a response to the request by call send_message.
+ * @param arg a void pointer. casting clientSocket.
+ */
 void *Server::clnt_connection(void *arg) {
     int clnt_sock = (int)(size_t)arg;
     int str_len=0;
@@ -355,6 +365,11 @@ void *Server::clnt_connection(void *arg) {
     
 }
 
+/**
+ * @brief send message to client.
+ * @param val a json object to send to the client.
+ * @param sock an integer. if sock is 0 notify to all, if negative notify except that person, if positive send only that person
+ */
 void Server::send_message(Value val, int sock) {
     StreamWriterBuilder builder;
     string str = writeString(builder, val);
@@ -387,6 +402,10 @@ void Server::send_message(Value val, int sock) {
     
 }
 
+/**
+ * @brief puts message for error
+ * @param message a constant character pointer to be puts.
+ */
 void Server::error_handling(char const* message) {
     fputs(message, stderr);
     fputc('\n',stderr);

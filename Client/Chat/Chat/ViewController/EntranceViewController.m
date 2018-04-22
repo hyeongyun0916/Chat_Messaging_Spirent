@@ -78,14 +78,14 @@
                 VC.chatArr[i][@"timestamp"] = chatTime;
             }
         }
-//        for (NSMutableDictionary *chat in VC.chatArr) {
-//            NSDate *date = [DBDF dateFromString:chat[@"timestamp"]];
-//            NSDate *resultDate = [date dateByAddingTimeInterval:Singleton.getInstance.interval];
-//            NSString *chatTime = [chatDF stringFromDate:resultDate];
-//            chat[@"timestamp"] = chatTime;
-//        }
     }
     DLog(@"");
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+    UITouch *touch = [touches anyObject];
+    if (!([touch.view isKindOfClass:[UITextView class]] || [touch.view isKindOfClass:[UITextField class]]))
+        [self.view endEditing:YES];
 }
 
 #pragma mark SocketDelegate
@@ -101,12 +101,6 @@
     } else {
         [Singleton.getInstance toast:dic[@"msg"]];
     }
-}
-
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    UITouch *touch = [touches anyObject];
-    if (!([touch.view isKindOfClass:[UITextView class]] || [touch.view isKindOfClass:[UITextField class]]))
-        [self.view endEditing:YES];
 }
 
 /*

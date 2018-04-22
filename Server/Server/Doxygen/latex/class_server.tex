@@ -1,0 +1,115 @@
+\hypertarget{class_server}{}\section{Server Class Reference}
+\label{class_server}\index{Server@{Server}}
+
+
+Class for T\+CP socket.  
+
+
+
+
+{\ttfamily \#include $<$Server.\+hpp$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{class_server_aff3205e599f2b9680b38407d4d3fe2fb}{open\+Server}} (const char $\ast$port)
+\begin{DoxyCompactList}\small\item\em lock for clnt\+\_\+socks \end{DoxyCompactList}\item 
+void $\ast$ \mbox{\hyperlink{class_server_a4adbe902c237615f2ec2ecc21e0f4dfa}{clnt\+\_\+connection}} (void $\ast$arg)
+\begin{DoxyCompactList}\small\item\em thread Function for client. read message from client. It sends a response to the request by call send\+\_\+message. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_server_ab16fa72c38eb792401edf5698007d805}{send\+\_\+message}} (Value val, int sock)
+\begin{DoxyCompactList}\small\item\em send message to client. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{class_server_ab07824cba6467208a7243bacc7073ff4}{error\+\_\+handling}} (char const $\ast$message)
+\begin{DoxyCompactList}\small\item\em puts message for error \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_server_a5dc6ac4bbf6f91a1c8a00ebb8871c32a}\label{class_server_a5dc6ac4bbf6f91a1c8a00ebb8871c32a}} 
+static void $\ast$ {\bfseries clnt\+\_\+connection\+\_\+wrapper} (void $\ast$object)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Class for T\+CP socket. 
+
+\begin{DoxyAuthor}{Author}
+hyunkyun 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+2018-\/04-\/23 
+\end{DoxyDate}
+\begin{DoxyVersion}{Version}
+0.\+0.\+1 
+\end{DoxyVersion}
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_server_a4adbe902c237615f2ec2ecc21e0f4dfa}\label{class_server_a4adbe902c237615f2ec2ecc21e0f4dfa}} 
+\index{Server@{Server}!clnt\+\_\+connection@{clnt\+\_\+connection}}
+\index{clnt\+\_\+connection@{clnt\+\_\+connection}!Server@{Server}}
+\subsubsection{\texorpdfstring{clnt\+\_\+connection()}{clnt\_connection()}}
+{\footnotesize\ttfamily void $\ast$ Server\+::clnt\+\_\+connection (\begin{DoxyParamCaption}\item[{void $\ast$}]{arg }\end{DoxyParamCaption})}
+
+
+
+thread Function for client. read message from client. It sends a response to the request by call send\+\_\+message. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em arg} & a void pointer. casting client\+Socket. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_server_ab07824cba6467208a7243bacc7073ff4}\label{class_server_ab07824cba6467208a7243bacc7073ff4}} 
+\index{Server@{Server}!error\+\_\+handling@{error\+\_\+handling}}
+\index{error\+\_\+handling@{error\+\_\+handling}!Server@{Server}}
+\subsubsection{\texorpdfstring{error\+\_\+handling()}{error\_handling()}}
+{\footnotesize\ttfamily void Server\+::error\+\_\+handling (\begin{DoxyParamCaption}\item[{char const $\ast$}]{message }\end{DoxyParamCaption})}
+
+
+
+puts message for error 
+
+
+\begin{DoxyParams}{Parameters}
+{\em message} & a constant character pointer to be puts. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_server_aff3205e599f2b9680b38407d4d3fe2fb}\label{class_server_aff3205e599f2b9680b38407d4d3fe2fb}} 
+\index{Server@{Server}!open\+Server@{open\+Server}}
+\index{open\+Server@{open\+Server}!Server@{Server}}
+\subsubsection{\texorpdfstring{open\+Server()}{openServer()}}
+{\footnotesize\ttfamily void Server\+::open\+Server (\begin{DoxyParamCaption}\item[{const char $\ast$}]{port }\end{DoxyParamCaption})}
+
+
+
+lock for clnt\+\_\+socks 
+
+setting server
+
+
+\begin{DoxyParams}{Parameters}
+{\em port} & a constant character pointer. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_server_ab16fa72c38eb792401edf5698007d805}\label{class_server_ab16fa72c38eb792401edf5698007d805}} 
+\index{Server@{Server}!send\+\_\+message@{send\+\_\+message}}
+\index{send\+\_\+message@{send\+\_\+message}!Server@{Server}}
+\subsubsection{\texorpdfstring{send\+\_\+message()}{send\_message()}}
+{\footnotesize\ttfamily void Server\+::send\+\_\+message (\begin{DoxyParamCaption}\item[{Value}]{val,  }\item[{int}]{sock }\end{DoxyParamCaption})}
+
+
+
+send message to client. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em val} & a json object to send to the client. \\
+\hline
+{\em sock} & an integer. if sock is 0 notify to all, if negative notify except that person, if positive send only that person \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/hyeongyunmun/\+Documents/\+Chat/\+Server/\+Server/Server.\+hpp\item 
+/\+Users/hyeongyunmun/\+Documents/\+Chat/\+Server/\+Server/Server.\+cpp\end{DoxyCompactItemize}

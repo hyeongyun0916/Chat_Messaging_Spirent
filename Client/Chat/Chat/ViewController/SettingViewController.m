@@ -52,6 +52,8 @@
     [sender setUserInteractionEnabled:NO];
 }
 
+#pragma mark TextFieldDelegate
+
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     if(range.length + range.location > textField.text.length)
         return NO;
