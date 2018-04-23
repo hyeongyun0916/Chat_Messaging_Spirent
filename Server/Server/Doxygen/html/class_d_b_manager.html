@@ -110,6 +110,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a546cf5b82fe9cb115cfee8d52f90f0da"><td class="memItemLeft" align="right" valign="top">Value&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_b_manager.html#a546cf5b82fe9cb115cfee8d52f90f0da">getAllChat</a> ()</td></tr>
 <tr class="memdesc:a546cf5b82fe9cb115cfee8d52f90f0da"><td class="mdescLeft">&#160;</td><td class="mdescRight">get all chat from database  <a href="#a546cf5b82fe9cb115cfee8d52f90f0da">More...</a><br /></td></tr>
 <tr class="separator:a546cf5b82fe9cb115cfee8d52f90f0da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af90bbc5f97ee7bb051006178c5e6834b"><td class="memItemLeft" align="right" valign="top">Value&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_b_manager.html#af90bbc5f97ee7bb051006178c5e6834b">getAllChatbyID</a> (string userid)</td></tr>
+<tr class="memdesc:af90bbc5f97ee7bb051006178c5e6834b"><td class="mdescLeft">&#160;</td><td class="mdescRight">get all chat that person has sent or received.  <a href="#af90bbc5f97ee7bb051006178c5e6834b">More...</a><br /></td></tr>
+<tr class="separator:af90bbc5f97ee7bb051006178c5e6834b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3631eb2172602412ceeb8f9608406aec"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_d_b_manager.html#a3631eb2172602412ceeb8f9608406aec">addChat</a> (string from, string to, string msg)</td></tr>
 <tr class="memdesc:a3631eb2172602412ceeb8f9608406aec"><td class="mdescLeft">&#160;</td><td class="mdescRight">add chat to database  <a href="#a3631eb2172602412ceeb8f9608406aec">More...</a><br /></td></tr>
 <tr class="separator:a3631eb2172602412ceeb8f9608406aec"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -280,6 +283,33 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>get all chat from database </p>
+<dl class="section return"><dt>Returns</dt><dd>Value Returns chat json array </dd></dl>
+
+</div>
+</div>
+<a id="af90bbc5f97ee7bb051006178c5e6834b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af90bbc5f97ee7bb051006178c5e6834b">&#9670;&nbsp;</a></span>getAllChatbyID()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Value DBManager::getAllChatbyID </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>userid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>get all chat that person has sent or received. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">userid</td><td>string </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>Value Returns chat json array </dd></dl>
 
 </div>

@@ -35,6 +35,8 @@ Value \mbox{\hyperlink{class_d_b_manager_a0171d3489ef375c9eeff4014a4a485de}{get\
 \begin{DoxyCompactList}\small\item\em get all user from database \end{DoxyCompactList}\item 
 Value \mbox{\hyperlink{class_d_b_manager_a546cf5b82fe9cb115cfee8d52f90f0da}{get\+All\+Chat}} ()
 \begin{DoxyCompactList}\small\item\em get all chat from database \end{DoxyCompactList}\item 
+Value \mbox{\hyperlink{class_d_b_manager_af90bbc5f97ee7bb051006178c5e6834b}{get\+All\+Chatby\+ID}} (string userid)
+\begin{DoxyCompactList}\small\item\em get all chat that person has sent or received. \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{class_d_b_manager_a3631eb2172602412ceeb8f9608406aec}{add\+Chat}} (string from, string to, string msg)
 \begin{DoxyCompactList}\small\item\em add chat to database \end{DoxyCompactList}\end{DoxyCompactItemize}
 
@@ -144,6 +146,24 @@ bool Returns true if the user is not offline or the status change succeeds.
 
 get all chat from database 
 
+\begin{DoxyReturn}{Returns}
+Value Returns chat json array 
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_d_b_manager_af90bbc5f97ee7bb051006178c5e6834b}\label{class_d_b_manager_af90bbc5f97ee7bb051006178c5e6834b}} 
+\index{D\+B\+Manager@{D\+B\+Manager}!get\+All\+Chatby\+ID@{get\+All\+Chatby\+ID}}
+\index{get\+All\+Chatby\+ID@{get\+All\+Chatby\+ID}!D\+B\+Manager@{D\+B\+Manager}}
+\subsubsection{\texorpdfstring{get\+All\+Chatby\+I\+D()}{getAllChatbyID()}}
+{\footnotesize\ttfamily Value D\+B\+Manager\+::get\+All\+Chatby\+ID (\begin{DoxyParamCaption}\item[{string}]{userid }\end{DoxyParamCaption})}
+
+
+
+get all chat that person has sent or received. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em userid} & string \\
+\hline
+\end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 Value Returns chat json array 
 \end{DoxyReturn}
