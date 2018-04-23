@@ -24,6 +24,7 @@
 //    [lagFreeField becomeFirstResponder];
 //    [lagFreeField resignFirstResponder];
 //    [lagFreeField removeFromSuperview];
+    [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
     return YES;
 }
 

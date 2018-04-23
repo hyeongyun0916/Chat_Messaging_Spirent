@@ -41,10 +41,13 @@
 }
 
 - (IBAction)modifyName:(UIButton *)sender {
-    [SocketSingleton.getInstance sendCmd:@"name"
-                                 Content:@{@"userid":_user[@"userid"], @"name":nameTF.text}];
-    [sender setUserInteractionEnabled:NO];
-
+    if (![_user[@"name"] isEqualToString:nameTF.text]) {
+        [SocketSingleton.getInstance sendCmd:@"name"
+                                     Content:@{@"userid":_user[@"userid"], @"name":nameTF.text}];
+        [sender setUserInteractionEnabled:NO];
+    } else {
+        [Singleton.getInstance toast:@"You didn't change Name"];
+    }
 }
 - (IBAction)switchBusy:(UISwitch *)sender {
     [SocketSingleton.getInstance sendCmd:@"status"

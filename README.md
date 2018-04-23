@@ -27,4 +27,4 @@ mhg5303@gmail.com
 
 ## License
 
-CampaignAdvisor is available under the MIT license. See the LICENSE file for more info.
+Chat_Messaging_Spirent is available under the MIT license. See the LICENSE file for more info.

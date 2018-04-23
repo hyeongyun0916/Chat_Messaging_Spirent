@@ -56,6 +56,7 @@ public:
     
     Value getAllUser();
     Value getAllChat();
+    Value getAllChatbyID(string userid);
     
     bool addChat(string from, string to, string msg);
 };

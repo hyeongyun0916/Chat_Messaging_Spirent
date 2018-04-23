@@ -104,7 +104,7 @@
 
 - (IBAction)openLeftMenu {
     [settingVC setUser:_user];
-    [settingVC addSideVCto:self isDimmed:YES fromDirection:SideVCDirectionFromLeft];
+    [settingVC addSideVCto:self isDimmed:NO fromDirection:SideVCDirectionFromLeft];
 }
 
 - (IBAction)showUserCV:(id)sender {
@@ -151,6 +151,12 @@
             }
         }
         else if ([dic[@"cmd"] isEqualToString:@"status"]) {
+            for (NSMutableDictionary *user in _userArr) {
+                if ([user[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
+                    user[@"status"] = dic[@"content"][@"status"];
+                    break;
+                }
+            }
             //if target is me
             if ([_user[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
                 _user[@"status"] = dic[@"content"][@"status"];
@@ -163,14 +169,10 @@
                 } else {
                     [sendView setUserInteractionEnabled:NO];
                 }
+                [chatTable reloadData];
+                [chatTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:MAX(0, _chatArr.count-1) inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+
             }
-            for (NSMutableDictionary *user in _userArr) {
-                if ([user[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
-                    user[@"status"] = dic[@"content"][@"status"];
-                    break;
-                }
-            }
-            [chatTable reloadData];
             //if whisperUser out(offline or busy)
             if ([whisperUser[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
                 if (![dic[@"content"][@"status"] isEqualToString:@"online"]) {
@@ -180,19 +182,23 @@
                     });
                 }
             }
+            [userCV reloadData];
         }
         //name changed
         else if ([dic[@"cmd"] isEqualToString:@"name"]) {
+            for (NSMutableDictionary *user in _userArr) {
+                if ([user[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
+                    user[@"name"] = dic[@"content"][@"name"];
+                    break;
+                }
+            }
             if ([_user[@"userid"] isEqualToString:dic[@"content"][@"userid"]]) {
                 _user[@"name"] = dic[@"content"][@"name"];
                 [settingVC setUser:_user];
             }
-            for (NSMutableDictionary *user in _userArr) {
-                if ([user[@"userid"] isEqualToString:dic[@"content"][@"name"]]) {
-                    user[@"status"] = dic[@"content"][@"name"];
-                    break;
-                }
-            }
+            [chatTable reloadData];
+            [chatTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:MAX(0, _chatArr.count-1) inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+            [userCV reloadData];
         }
         //user out in etc..
         else if ([dic[@"cmd"] isEqualToString:@"userchanged"]) {

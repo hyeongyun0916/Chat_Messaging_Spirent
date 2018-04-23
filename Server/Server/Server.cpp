@@ -160,7 +160,7 @@ void *Server::clnt_connection(void *arg) {
                                 content["userid"] = userid;
                                 Value users = dbManager->getAllUser();
                                 content["users"] = users;
-                                content["chats"] = dbManager->getAllChat();
+                                content["chats"] = dbManager->getAllChatbyID(userid);
                                 result["content"] = content;
                                 user_socks.insert({userid, clnt_sock});
                                 
@@ -189,7 +189,7 @@ void *Server::clnt_connection(void *arg) {
                             Value result;
                             result["cmd"] = val["cmd"];
                             result["result"] = static_cast<int>(StatusCode::NoDataFound);
-                            result["msg"] = "You are Not Member";
+                            result["msg"] = "Check ID/PW";
                             send_message(result, clnt_sock);
                         }
                     }

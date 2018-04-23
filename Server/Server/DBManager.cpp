@@ -160,6 +160,26 @@ Value DBManager::getAllChat() {
     return chats;
 }
 
+/**
+ * @brief get all chat that person has sent or received.
+ * @param userid string
+ * @return Value Returns chat json array
+ */
+Value DBManager::getAllChatbyID(string userid) {
+    Value chats;
+    res = stmt->executeQuery("select * from `Message` where \
+                             `from`='"+userid+"' or `to`='"+userid+"' or `to`='';");
+    while (res->next()) {
+        Value chat;
+        chat["chatno"] = res->getInt("chatno");
+        chat["from"] = res->getString("from").c_str();
+        chat["to"] = res->getString("to").c_str();
+        chat["msg"] = res->getString("msg").c_str();
+        chat["timestamp"] = res->getString("timestamp").c_str();
+        chats.append(chat);
+    }
+    return chats;
+}
 
 /**
  * @brief add chat to database
